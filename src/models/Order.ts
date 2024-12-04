@@ -1,11 +1,11 @@
 import mongoose, { Schema, Document, model, models } from "mongoose";
 
 export interface IOrder extends Document {
-  user: mongoose.Types.ObjectId; // Reference to User
+  user: mongoose.Types.ObjectId;
   products: {
-    product: mongoose.Types.ObjectId; // Reference to Product
+    product: mongoose.Types.ObjectId;
     quantity: number;
-    price: number; // Product price at the time of order
+    price: number;
   }[];
   totalAmount: number;
   status: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED";

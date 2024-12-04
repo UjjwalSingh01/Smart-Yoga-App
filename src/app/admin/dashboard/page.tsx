@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Container, Typography, Box, CircularProgress } from "@mui/material";
+import { Container, Typography, Box, CircularProgress, Button } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
 import DashboardCard from "@/components/DashboardCard";
 import SalesChart from "@/components/SalesChart";
+import AddAdminModal from "@/components/AddAdminModal"; // Import AddAdminModal
 
 interface SalesData {
   productsSold: {
@@ -20,46 +22,28 @@ interface SalesData {
   salesByMonth: { month: string; sales: number }[];
 }
 
-const dummyData: SalesData = {
-    productsSold: {
-      week: 120,
-      month: 450,
-      year: 5420,
-    },
-    sales: {
-      week: 3000.75,
-      month: 11250.40,
-      year: 135000.00,
-    },
-    salesByMonth: [
-      { month: "Dec", sales: 12000.00 },
-      { month: "Nov", sales: 9500.50 },
-      { month: "Oct", sales: 11000.00 },
-      { month: "Sep", sales: 8500.75 },
-      { month: "Aug", sales: 9700.00 },
-      { month: "Jul", sales: 10450.25 },
-      { month: "Jun", sales: 11500.00 },
-      { month: "May", sales: 12200.80 },
-      { month: "Apr", sales: 10800.50 },
-      { month: "Mar", sales: 9500.25 },
-      { month: "Feb", sales: 8700.10 },
-      { month: "Jan", sales: 10000.00 },
-    ],
-  };
-  
-
 const AdminDashboard: React.FC = () => {
-  const [data, setData] = useState<SalesData | null>();
-  const [loading, setLoading] = useState<boolean>(false);
+  const [data, setData] = useState<SalesData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAddAdminOpen, setIsAddAdminOpen] = useState(false); // Modal state
 
   useEffect(() => {
     const fetchData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("Unauthorized access. Please log in.");
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await axios.get<SalesData>("/api/admin/dashboard");
+        const response = await axios.get<SalesData>("/api/admin/dashboard", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setData(response.data);
       } catch (err: any) {
-        setError(err.response?.data?.error || "Failed to fetch data");
+        setError(err.response?.data?.error || "Failed to fetch data.");
       } finally {
         setLoading(false);
       }
@@ -68,9 +52,34 @@ const AdminDashboard: React.FC = () => {
     fetchData();
   }, []);
 
+  const handleAddAdmin = async (adminData: { fullname: string; email: string; password: string; role: string }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Unauthorized access. Please log in.");
+      return;
+    }
+
+    try {
+      await axios.post("/api/admin/register", adminData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("Admin added successfully!");
+      setIsAddAdminOpen(false); // Close modal after successful addition
+    } catch (err: any) {
+      alert(err.response?.data?.error || "Failed to add admin.");
+    }
+  };
+
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -88,55 +97,67 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Admin Dashboard
-      </Typography>
-
-      {/* Part 1: Number of Products Sold */}
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Number of Products Sold
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
+        <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+          Admin Dashboard
         </Typography>
-        <Box
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={() => setIsAddAdminOpen(true)}
           sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 4,
-            justifyContent: "space-between",
+            textTransform: "none",
+            fontWeight: "bold",
+            boxShadow: "0 3px 6px rgba(0,0,0,0.16)",
+            "&:hover": {
+              backgroundColor: "#004aad",
+              boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+            },
           }}
         >
+          Add Admin
+        </Button>
+      </Box>
+
+      {/* Products Sold */}
+      <Box sx={{ my: 4 }}>
+        <Typography variant="h5" gutterBottom>
+          Products Sold
+        </Typography>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 4, justifyContent: "space-between" }}>
           <DashboardCard title="This Week" value={data?.productsSold.week || 0} />
           <DashboardCard title="This Month" value={data?.productsSold.month || 0} />
           <DashboardCard title="This Year" value={data?.productsSold.year || 0} />
         </Box>
       </Box>
 
-      {/* Part 2: Total Sales */}
+      {/* Total Sales */}
       <Box sx={{ my: 4 }}>
         <Typography variant="h5" gutterBottom>
           Total Sales
         </Typography>
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 4,
-            justifyContent: "space-between",
-          }}
-        >
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 4, justifyContent: "space-between" }}>
           <DashboardCard title="This Week" value={`$${data?.sales.week.toFixed(2) || 0}`} />
           <DashboardCard title="This Month" value={`$${data?.sales.month.toFixed(2) || 0}`} />
           <DashboardCard title="This Year" value={`$${data?.sales.year.toFixed(2) || 0}`} />
         </Box>
       </Box>
 
-      {/* Part 3: Sales Chart */}
+      {/* Sales Over Time */}
       <Box sx={{ my: 4 }}>
         <Typography variant="h5" gutterBottom>
           Sales Over Time
         </Typography>
         <SalesChart data={data?.salesByMonth || []} />
       </Box>
+
+      {/* Add Admin Modal */}
+      <AddAdminModal
+        open={isAddAdminOpen}
+        onClose={() => setIsAddAdminOpen(false)}
+        onAdd={handleAddAdmin}
+      />
     </Container>
   );
 };

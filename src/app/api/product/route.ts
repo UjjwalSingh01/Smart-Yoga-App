@@ -1,73 +1,82 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/database/mongodb";
 import Product from "@/models/Product";
+import Cors from "cors";
 
-// GET: Fetch all products
-export async function GET() {
-  try {
-    await dbConnect();
-    const products = await Product.find();
-    return NextResponse.json(products, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+const cors = Cors({
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  origin: "*", 
+});
+
+// Helper function to run middleware
+function runMiddleware(req: NextApiRequest, res: NextApiResponse, fn: Function) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result: any) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+      return resolve(result);
+    });
+  });
 }
 
-// POST: Add a new product
-export async function POST(request: NextRequest) {
-  try {
-    await dbConnect();
-    const body = await request.json();
-    const product = await Product.create(body);
-    return NextResponse.json(product, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  await runMiddleware(req, res, cors); 
+  await dbConnect(); 
+  const { method } = req;
+
+  if (method === "GET") {
+    try {
+      const products = await Product.find({});
+      return res.status(200).json(products);
+    } catch (error: any) {
+      return res.status(500).json({ error: error.message });
+    }
   }
-}
 
-// PATCH: Update a product
-export async function PATCH(request: NextRequest) {
-  try {
-    await dbConnect();
-    const { searchParams } = new URL(request.url);
-    const productId = searchParams.get("id");
-
-    if (!productId) {
-      return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
+  if (method === "POST") {
+    try {
+      const product = await Product.create(req.body);
+      return res.status(201).json(product);
+    } catch (error: any) {
+      return res.status(400).json({ error: error.message });
     }
-
-    const body = await request.json();
-    const product = await Product.findByIdAndUpdate(productId, body, { new: true });
-
-    if (!product) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(product, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
   }
-}
 
-// DELETE: Delete a product
-export async function DELETE(request: NextRequest) {
-  try {
-    await dbConnect();
-    const { searchParams } = new URL(request.url);
-    const productId = searchParams.get("id");
-
-    if (!productId) {
-      return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
+  if (method === "PATCH") {
+    const { id } = req.query;
+    if (!id) {
+      return res.status(400).json({ error: "Product ID is required" });
     }
 
-    const deletedProduct = await Product.findByIdAndDelete(productId);
-
-    if (!deletedProduct) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    try {
+      const updatedProduct = await Product.findByIdAndUpdate(id, req.body, { new: true });
+      if (!updatedProduct) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+      return res.status(200).json(updatedProduct);
+    } catch (error: any) {
+      return res.status(400).json({ error: error.message });
     }
-
-    return NextResponse.json({ message: "Product deleted successfully" }, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  if (method === "DELETE") {
+    const { id } = req.query;
+    if (!id) {
+      return res.status(400).json({ error: "Product ID is required" });
+    }
+
+    try {
+      const deletedProduct = await Product.findByIdAndDelete(id);
+      if (!deletedProduct) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+      return res.status(200).json({ message: "Product deleted successfully" });
+    } catch (error: any) {
+      return res.status(400).json({ error: error.message });
+    }
+  }
+
+  res.setHeader("Allow", ["GET", "POST", "PATCH", "DELETE"]);
+  return res.status(405).end(`Method ${method} Not Allowed`);
 }

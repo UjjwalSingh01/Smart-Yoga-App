@@ -116,16 +116,16 @@ const BlogPage: React.FC = () => {
         setBlogs(response.data);
       } catch (err: any) {
         setError(err.response?.data?.error || "Failed to fetch blogs");
-      } finally {
-        setLoading(false);
-      }
+      } 
+      setLoading(false);
+      
     };
 
     fetchBlogs();
   }, [showOwnBlogs]);
 
   const handleAddBlog = async (newBlog: Omit<Blog, "id" | "creator" | "creatorRole" | "createdAt">) => {
-    const token = localStorage.getItem("token");
+    const token = await localStorage.getItem("token");
     if (!token) {
       setError("Unauthorized. Please sign in.");
       return;
@@ -177,7 +177,7 @@ const BlogPage: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" className="text-center mb-4">
+      <Typography variant="h4" textAlign="center" sx={{ mb: 4 }}>
         Yoga and Wellness Blog
       </Typography>
 
@@ -213,28 +213,28 @@ const BlogPage: React.FC = () => {
       </Box>
 
       <Box
-    sx={{
-      display: "flex",
-      flexDirection: "column",
-      gap: 4,
-      alignItems: "center", // Align blogs to the center horizontally
-    }}
-  >
-    {filteredBlogs.map((blog) => (
-      <BlogCard
-        key={blog.id}
-        id={blog.id}
-        title={blog.title}
-        description={blog.description}
-        content={blog.content}
-        image={blog.image}
-        date={blog.createdAt} // Map createdAt to date
-        creator={blog.creator}
-        creatorRole={blog.creatorRole}
-        tags={blog.tags}
-      />
-    ))}
-  </Box>
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 4,
+          alignItems: "center",
+        }}
+      >
+        {filteredBlogs.map((blog) => (
+          <BlogCard
+            key={blog.id}
+            id={blog.id}
+            title={blog.title}
+            description={blog.description}
+            content={blog.content}
+            image={blog.image}
+            date={blog.createdAt}
+            creator={blog.creator}
+            creatorRole={blog.creatorRole}
+            tags={blog.tags}
+          />
+        ))}
+      </Box>
 
       <AddBlogModal
         open={isModalOpen}

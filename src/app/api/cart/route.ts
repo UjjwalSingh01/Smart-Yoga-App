@@ -2,15 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/database/mongodb";
 import Cart from "@/models/Cart";
 
-// GET /api/cart - Fetch cart items for authenticated user
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
-
     const userId = request.headers.get("userId");
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const cartItems = await Cart.find({ user: userId }).populate("product");
     return NextResponse.json(cartItems, { status: 200 });
@@ -19,15 +15,11 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// PUT /api/cart - Update quantity of a cart item
 export async function PUT(request: NextRequest) {
   try {
     await dbConnect();
-
     const userId = request.headers.get("userId");
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { _id, quantity } = await request.json();
     const updatedItem = await Cart.findOneAndUpdate(
@@ -36,9 +28,7 @@ export async function PUT(request: NextRequest) {
       { new: true }
     );
 
-    if (!updatedItem) {
-      return NextResponse.json({ error: "Item not found or not authorized" }, { status: 404 });
-    }
+    if (!updatedItem) return NextResponse.json({ error: "Item not found or not authorized" }, { status: 404 });
 
     return NextResponse.json(updatedItem, { status: 200 });
   } catch (error: any) {
@@ -46,23 +36,17 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// DELETE /api/cart - Remove a cart item
 export async function DELETE(request: NextRequest) {
   try {
     await dbConnect();
-
     const userId = request.headers.get("userId");
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
     const deletedItem = await Cart.findOneAndDelete({ _id: id, user: userId });
-    if (!deletedItem) {
-      return NextResponse.json({ error: "Item not found or not authorized" }, { status: 404 });
-    }
+    if (!deletedItem) return NextResponse.json({ error: "Item not found or not authorized" }, { status: 404 });
 
     return NextResponse.json({ message: "Item removed successfully" }, { status: 200 });
   } catch (error: any) {

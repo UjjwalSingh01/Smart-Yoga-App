@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/database/mongodb";
-import Order, { IOrder } from "@/models/Order";
+import Order from "@/models/Order";
+import { IOrder } from "@/models/Order";
 
 interface SalesData {
   productsSold: {
@@ -18,32 +19,21 @@ interface SalesData {
 
 const getSalesData = async (): Promise<SalesData> => {
   const now = new Date();
-  const startOfWeek = new Date();
+  const startOfWeek = new Date(now);
   startOfWeek.setDate(now.getDate() - now.getDay());
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startOfYear = new Date(now.getFullYear(), 0, 1);
 
-  const productsSold = {
-    week: 0,
-    month: 0,
-    year: 0,
-  };
-
-  const sales = {
-    week: 0,
-    month: 0,
-    year: 0,
-  };
-
+  const productsSold = { week: 0, month: 0, year: 0 };
+  const sales = { week: 0, month: 0, year: 0 };
   const salesByMonth: { month: string; sales: number }[] = [];
 
   await dbConnect();
-
   const orders: IOrder[] = await Order.find({ status: "DELIVERED" });
 
   for (const order of orders) {
     const createdAt = new Date(order.createdAt);
-    const totalProducts = order.products.reduce((sum, p) => sum + p.quantity, 0);
+    const totalProducts = order.products.reduce((sum, product) => sum + product.quantity, 0);
 
     if (createdAt >= startOfWeek) {
       productsSold.week += totalProducts;
@@ -63,23 +53,19 @@ const getSalesData = async (): Promise<SalesData> => {
     const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
     const monthName = date.toLocaleString("default", { month: "short" });
     const monthOrders = orders.filter(
-      (o) =>
-        new Date(o.createdAt).getFullYear() === date.getFullYear() &&
-        new Date(o.createdAt).getMonth() === date.getMonth()
+      (order) =>
+        new Date(order.createdAt).getFullYear() === date.getFullYear() &&
+        new Date(order.createdAt).getMonth() === date.getMonth()
     );
 
-    const totalSales = monthOrders.reduce((sum, o) => sum + o.totalAmount, 0);
-
-    salesByMonth.push({
-      month: monthName,
-      sales: totalSales,
-    });
+    const totalSales = monthOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+    salesByMonth.push({ month: monthName, sales: totalSales });
   }
 
   return { productsSold, sales, salesByMonth };
 };
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const data = await getSalesData();
     return NextResponse.json(data, { status: 200 });

@@ -33,14 +33,11 @@ function ResponsiveAppBar() {
   const isAdmin = pathname.startsWith("/admin");
 
   const handleLogout = () => {
-    // Clear JWT token from local storage
     localStorage.removeItem("token");
     
-    // Redirect to /sign-in page
     router.push("/sign-in");
   };
 
-  // Define navigation options based on user or admin role
   const pages = isAdmin
     ? ["Dashboard", "Product", "Blog", "Social"]
     : ["Product", "Blogs", "Social", "Orders"];
@@ -53,7 +50,7 @@ function ResponsiveAppBar() {
     : [
         { label: "Profile", icon: <AccountCircleIcon />, action: () => console.log("Profile clicked") },
         { label: "Cart", icon: <ShoppingCartIcon />, action: () => router.push("/cart"), },
-        { label: "Logout", icon: <ExitToAppIcon />, action: () => handleLogout },
+        { label: "Logout", icon: <ExitToAppIcon />, action: () => handleLogout() },
       ];
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {

@@ -1,43 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import ProductCard from "@/components/ProductCard";
 
 type Product = {
-  _id: string;
+  _id: string; 
   title: string;
+  description: string;
   price: number;
   discountedPrice: number;
   image: string;
-  shortDescription?: string;
-  slug: string;
+  quantity: number;
+  returnPolicy: string; 
+  shippingPolicy: string; 
+  slug: string
 };
+
 
 export default function Home() {
   const [cart, setCart] = useState<string[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const itemsPerPage = 2;
 
-  const products: Product[] = [
-    {
-      _id: "1",
-      title: "Yoga Mat",
-      price: 49.99,
-      discountedPrice: 39.99,
-      image: "/images/yoga-mat.jpg",
-      shortDescription: "Eco-friendly non-slip yoga mat.",
-      slug: "yoga-mat",
-    },
-    {
-      _id: "2",
-      title: "Yoga Blocks",
-      price: 29.99,
-      discountedPrice: 24.99,
-      image: "/images/yoga-blocks.jpg",
-      shortDescription: "Lightweight supportive yoga blocks.",
-      slug: "yoga-blocks",
-    },
-  ];
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get<Product[]>("/api/products");
+      setProducts(response.data);
+      setLoading(false);
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Failed to fetch products");
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const totalPages = Math.ceil(products.length / itemsPerPage);
   const paginatedProducts = products.slice(
@@ -49,6 +52,22 @@ export default function Home() {
     setCart((prevCart) => [...prevCart, id]);
     alert("Product added to cart!");
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div>

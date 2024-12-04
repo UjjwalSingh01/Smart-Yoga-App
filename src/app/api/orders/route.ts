@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/orders - Place a new order
+// POST /api/orders - Add a new order
 export async function POST(request: NextRequest) {
   try {
     await dbConnect();
@@ -31,12 +31,10 @@ export async function POST(request: NextRequest) {
 
     const { products, totalAmount, address } = await request.json();
 
-    // Validate products array
     if (!products || !Array.isArray(products) || products.length === 0) {
       return NextResponse.json({ error: "Products are required." }, { status: 400 });
     }
 
-    // Ensure each product in the array has necessary details
     for (const item of products) {
       if (!item.product || !item.quantity || !item.price) {
         return NextResponse.json(
@@ -56,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(newOrder, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: `Failed to place order: ${error.message}` }, { status: 500 });
+    return NextResponse.json({ error: `Failed to add order: ${error.message}` }, { status: 500 });
   }
 }
 

@@ -12,11 +12,8 @@ const Add = ({
 }) => {
   const [quantity, setQuantity] = useState(1);
 
-  // // TEMPORARY
-  // const stock = 4;
-
   const addItem = () => {
-    
+
   }
 
   const handleQuantity = (type: "i" | "d") => {

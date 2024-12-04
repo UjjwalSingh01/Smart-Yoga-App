@@ -1,9 +1,8 @@
-// /pages/api/social/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/database/mongodb";
 import Social from "@/models/Social";
 
-// Fetch all social media posts
+// GET /api/social - Fetch all social media posts
 export async function GET() {
   try {
     await dbConnect();
@@ -14,7 +13,7 @@ export async function GET() {
   }
 }
 
-// Add a new social media post
+// POST /api/social - Add a new social media post
 export async function POST(request: NextRequest) {
   try {
     await dbConnect();

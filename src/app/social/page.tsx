@@ -23,14 +23,16 @@ const SocialPage: React.FC = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
+        const token = localStorage.getItem("token");
       try {
-        const response = await axios.get<SocialPost[]>("/api/social");
+        const response = await axios.get("/api/social", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
         setSocialPosts(response.data);
       } catch (error) {
         console.error("Failed to fetch social media posts", error);
-      } finally {
-        setLoading(false);
       }
+        setLoading(false);
     };
 
     fetchPosts();

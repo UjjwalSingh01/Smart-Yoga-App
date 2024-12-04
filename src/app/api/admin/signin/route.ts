@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/database/mongodb";
-import User from "@/models/User";
+import Admin from "@/models/Admin";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -15,12 +15,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
     }
 
-    const user = await User.findOne({ email }).select("+password");
+    const user = await Admin.findOne({ email }).select("+password");
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return NextResponse.json({ error: "Invalid credentials." }, { status: 401 });
     }
 
-    // Convert ObjectId to string when creating the token
     const token = jwt.sign({ id: user._id.toString(), email: user.email }, JWT_SECRET, { expiresIn: "1d" });
 
     return NextResponse.json({ token }, { status: 200 });

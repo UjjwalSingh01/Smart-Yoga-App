@@ -17,13 +17,6 @@ const Footer = () => {
           </p>
           <span className="font-semibold">yogaproduct@gmail.com</span>
           <span className="font-semibold">+1 234 567 890</span>
-          <div className="flex gap-6">
-            <Image src="/facebook.png" alt="" width={16} height={16} />
-            <Image src="/instagram.png" alt="" width={16} height={16} />
-            <Image src="/youtube.png" alt="" width={16} height={16} />
-            <Image src="/pinterest.png" alt="" width={16} height={16} />
-            <Image src="/x.png" alt="" width={16} height={16} />
-          </div>
         </div>
         {/* CENTER */}
         <div className="hidden lg:flex justify-between w-1/2">

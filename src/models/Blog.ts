@@ -2,6 +2,7 @@ import mongoose, { Schema, Document, model, models } from "mongoose";
 
 export interface IBlog extends Document {
   title: string;
+  description: string;
   content: string;
   image: string;
   creator: mongoose.Types.ObjectId; // Reference to Admin or User

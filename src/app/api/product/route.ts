@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/database/mongodb";
 import Product from "@/models/Product";
 
-// Fetch all products
+// GET: Fetch all products
 export async function GET() {
   try {
     await dbConnect();
@@ -13,7 +13,7 @@ export async function GET() {
   }
 }
 
-// Add a new product
+// POST: Add a new product
 export async function POST(request: NextRequest) {
   try {
     await dbConnect();
@@ -25,11 +25,11 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Update a product (requires a dynamic segment in the URL)
+// PATCH: Update a product
 export async function PATCH(request: NextRequest) {
   try {
     await dbConnect();
-    const { searchParams } = new URL(request.url); // Extract parameters from the URL
+    const { searchParams } = new URL(request.url);
     const productId = searchParams.get("id");
 
     if (!productId) {
@@ -49,11 +49,11 @@ export async function PATCH(request: NextRequest) {
   }
 }
 
-// Delete a product (requires a dynamic segment in the URL)
+// DELETE: Delete a product
 export async function DELETE(request: NextRequest) {
   try {
     await dbConnect();
-    const { searchParams } = new URL(request.url); // Extract parameters from the URL
+    const { searchParams } = new URL(request.url);
     const productId = searchParams.get("id");
 
     if (!productId) {

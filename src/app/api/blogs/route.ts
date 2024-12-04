@@ -1,20 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import jwt from "jsonwebtoken";
 import dbConnect from "@/database/mongodb";
 import Blog from "@/models/Blog";
+
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+
+// Extract user ID from JWT
+const getUserIdFromToken = (request: NextRequest): string | null => {
+  const authHeader = request.headers.get("Authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
+
+  const token = authHeader.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+    return decoded.id;
+  } catch {
+    return null;
+  }
+};
 
 // GET /api/blogs
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
 
-    const session = await getServerSession(authOptions);
+    const userId = getUserIdFromToken(request);
     const { searchParams } = new URL(request.url);
     const onlyUser = searchParams.get("onlyUser") === "true";
 
-    const filter = onlyUser && session?.user ? { creator: session.user.id } : {};
-    const blogs = await Blog.find(filter);
+    const filter = onlyUser && userId ? { creator: userId } : {};
+    const blogs = await Blog.find(filter).populate("creator", "fullname");
 
     return NextResponse.json(blogs, { status: 200 });
   } catch (error: any) {
@@ -27,8 +42,8 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
 
-    const session = await getServerSession(authOptions);
-    if (!session || !session.user) {
+    const userId = getUserIdFromToken(request);
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -39,8 +54,8 @@ export async function POST(request: NextRequest) {
       content,
       image,
       tags,
-      creator: session.user.id,
-      creatorRole: session.user.role, // Ensure `role` is included in session
+      creator: userId,
+      creatorRole: "user",
       createdAt: new Date(),
     });
 
@@ -55,8 +70,8 @@ export async function PATCH(request: NextRequest) {
   try {
     await dbConnect();
 
-    const session = await getServerSession(authOptions);
-    if (!session || !session.user) {
+    const userId = getUserIdFromToken(request);
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -70,7 +85,7 @@ export async function PATCH(request: NextRequest) {
     const { title, content, image, tags } = await request.json();
 
     const blog = await Blog.findOneAndUpdate(
-      { _id: blogId, creator: session.user.id },
+      { _id: blogId, creator: userId },
       { title, content, image, tags, updatedAt: new Date() },
       { new: true }
     );

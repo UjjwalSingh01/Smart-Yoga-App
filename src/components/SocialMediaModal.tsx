@@ -7,90 +7,144 @@ import {
   TextField,
   Button,
   Typography,
+  Select,
+  MenuItem,
+  Chip,
 } from "@mui/material";
+import { SelectChangeEvent } from "@mui/material";
 
-type SocialMediaModalProps = {
+type AddSocialMediaModalProps = {
   open: boolean;
   onClose: () => void;
+  onAdd: (socialPost: any) => void;
 };
 
-const SocialMediaModal: React.FC<SocialMediaModalProps> = ({ open, onClose }) => {
-  const [socialLinks, setSocialLinks] = useState({
-    facebook: "",
-    instagram: "",
-    twitter: "",
+const AddSocialMediaModal: React.FC<AddSocialMediaModalProps> = ({
+  open,
+  onClose,
+  onAdd,
+}) => {
+  const [post, setPost] = useState({
+    platform: "",
+    postLink: "",
+    mediaType: "text",
+    mediaUrl: "",
+    description: "",
+    tags: [] as string[],
+    datePosted: new Date().toISOString().split("T")[0],
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setSocialLinks({ ...socialLinks, [name]: value });
+  const [newTag, setNewTag] = useState("");
+
+  const handleAddTag = () => {
+    if (newTag && !post.tags.includes(newTag)) {
+      setPost((prev) => ({ ...prev, tags: [...prev.tags, newTag] }));
+      setNewTag("");
+    }
   };
 
-  const handleSubmit = async () => {
-    try {
-      // Send data to API for updating social media links
-      console.log("Submitting social media links:", socialLinks);
-    } catch (error) {
-      console.error("Error submitting social media links:", error);
-    } finally {
-      onClose();
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setPost({ ...post, [e.target.name]: e.target.value });
+  };
+
+  const handleMediaTypeChange = (event: SelectChangeEvent<string>) => {
+    setPost({ ...post, mediaType: event.target.value as "image" | "video" | "text" });
+  };
+
+  const handleSubmit = () => {
+    onAdd(post);
+    onClose();
   };
 
   return (
     <Modal open={open} onClose={onClose}>
       <Box
         sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "90%",
-          maxWidth: 600,
-          bgcolor: "background.paper",
           p: 4,
+          bgcolor: "background.paper",
           borderRadius: 2,
-          boxShadow: 24,
+          mx: "auto",
+          mt: 10,
+          width: 500,
         }}
       >
         <Typography variant="h6" gutterBottom>
-          Update Social Media Links
+          Add Social Media Post
         </Typography>
         <TextField
           fullWidth
-          label="Facebook URL"
-          name="facebook"
-          value={socialLinks.facebook}
+          label="Platform"
+          name="platform"
+          value={post.platform}
           onChange={handleChange}
           sx={{ mb: 2 }}
         />
         <TextField
           fullWidth
-          label="Instagram URL"
-          name="instagram"
-          value={socialLinks.instagram}
+          label="Post Link"
+          name="postLink"
+          value={post.postLink}
           onChange={handleChange}
           sx={{ mb: 2 }}
         />
-        <TextField
+        <Select
           fullWidth
-          label="Twitter URL"
-          name="twitter"
-          value={socialLinks.twitter}
-          onChange={handleChange}
+          value={post.mediaType}
+          onChange={handleMediaTypeChange}
           sx={{ mb: 2 }}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit}
-          fullWidth
         >
-          Submit
+          <MenuItem value="image">Image</MenuItem>
+          <MenuItem value="video">Video</MenuItem>
+          <MenuItem value="text">Text</MenuItem>
+        </Select>
+        <TextField
+          fullWidth
+          label="Media URL"
+          name="mediaUrl"
+          value={post.mediaUrl}
+          onChange={handleChange}
+          sx={{ mb: 2 }}
+        />
+        <TextField
+          fullWidth
+          label="Description"
+          name="description"
+          value={post.description}
+          onChange={handleChange}
+          multiline
+          rows={3}
+          sx={{ mb: 2 }}
+        />
+        <TextField
+          fullWidth
+          label="Add Tag"
+          value={newTag}
+          onChange={(e) => setNewTag(e.target.value)}
+          sx={{ mb: 2 }}
+        />
+        <Button onClick={handleAddTag} sx={{ mb: 2 }}>
+          Add Tag
+        </Button>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
+          {post.tags.map((tag, index) => (
+            <Chip
+              key={index}
+              label={tag}
+              onDelete={() =>
+                setPost((prev) => ({
+                  ...prev,
+                  tags: prev.tags.filter((t) => t !== tag),
+                }))
+              }
+            />
+          ))}
+        </Box>
+        <Button variant="contained" color="primary" fullWidth onClick={handleSubmit}>
+          Add Post
         </Button>
       </Box>
     </Modal>
   );
 };
 
-export default SocialMediaModal;
+export default AddSocialMediaModal;

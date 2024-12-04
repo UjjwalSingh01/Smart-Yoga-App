@@ -91,7 +91,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ open, onClose, onAdd 
         />
         <TextField
           fullWidth
-          label="Policy"
+          label="Return Policy"
           name="policy"
           value={product.policy}
           onChange={handleChange}

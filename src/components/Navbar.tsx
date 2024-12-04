@@ -18,22 +18,31 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { useState } from "react";
 import { useMediaQuery, useTheme } from "@mui/material";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const pathname = usePathname();
+  const router = useRouter();
 
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("md")); // Large screens (md and above)
 
   const isAdmin = pathname.startsWith("/admin");
 
+  const handleLogout = () => {
+    // Clear JWT token from local storage
+    localStorage.removeItem("token");
+    
+    // Redirect to /sign-in page
+    router.push("/sign-in");
+  };
+
   // Define navigation options based on user or admin role
   const pages = isAdmin
-    ? ["Dashboard", "Product", "Blogs", "Social"]
+    ? ["Dashboard", "Product", "Blog", "Social"]
     : ["Product", "Blogs", "Social", "Orders"];
 
   const rightEndOptions = isAdmin
@@ -43,8 +52,8 @@ function ResponsiveAppBar() {
       ]
     : [
         { label: "Profile", icon: <AccountCircleIcon />, action: () => console.log("Profile clicked") },
-        { label: "Cart", icon: <ShoppingCartIcon />, action: () => console.log("Cart clicked") },
-        { label: "Logout", icon: <ExitToAppIcon />, action: () => signOut({ callbackUrl: "/login" }) },
+        { label: "Cart", icon: <ShoppingCartIcon />, action: () => router.push("/cart"), },
+        { label: "Logout", icon: <ExitToAppIcon />, action: () => handleLogout },
       ];
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {

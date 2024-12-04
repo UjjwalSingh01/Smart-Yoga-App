@@ -16,7 +16,6 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
-import { useSession, signIn } from "next-auth/react";
 
 type CartItem = {
   _id: string;
@@ -27,30 +26,54 @@ type CartItem = {
   image: string;
 };
 
+const dummyCartItems: CartItem[] = [
+  {
+    _id: "1",
+    name: "Yoga Mat",
+    description: "Eco-friendly, non-slip yoga mat for all fitness levels.",
+    price: 39.99,
+    quantity: 2,
+    image: "https://via.placeholder.com/140?text=Yoga+Mat",
+  },
+  {
+    _id: "2",
+    name: "Yoga Blocks",
+    description: "Lightweight and durable yoga blocks for better flexibility.",
+    price: 14.99,
+    quantity: 3,
+    image: "https://via.placeholder.com/140?text=Yoga+Blocks",
+  },
+  {
+    _id: "3",
+    name: "Yoga Strap",
+    description: "Stretch and strengthen with this durable yoga strap.",
+    price: 9.99,
+    quantity: 1,
+    image: "https://via.placeholder.com/140?text=Yoga+Strap",
+  },
+];
+
 const CartPage: React.FC = () => {
-  const { data: session, status } = useSession();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Redirect to sign-in if unauthenticated
-    if (status === "unauthenticated") {
-        signIn();
-        return;
-    }
-
     const fetchCartItems = async () => {
-      if (status === "authenticated") {
-        try {
-          const response = await axios.get(`/api/cart`);
-          setCartItems(response.data);
-        } catch (err: any) {
-          setError(err.response?.data?.error || "Failed to fetch cart items");
-        } 
-          
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("Unauthorized");
+        }
+
+        const response = await axios.get(`/api/cart`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setCartItems(response.data);
+      } catch (err: any) {
+        setError(err.response?.data?.error || "Failed to fetch cart items");
+      } finally {
         setLoading(false);
-        
       }
     };
 
@@ -60,11 +83,17 @@ const CartPage: React.FC = () => {
   const handleQuantityChange = async (id: string, value: string) => {
     const updatedQuantity = Math.max(1, parseInt(value) || 1);
     try {
-      await axios.put(`/api/cart`, { 
-        _id: id, 
-        quantity: updatedQuantity 
-      });
-      
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Unauthorized");
+      }
+
+      await axios.put(
+        `/api/cart`,
+        { _id: id, quantity: updatedQuantity },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
       setCartItems((prevItems) =>
         prevItems.map((item) =>
           item._id === id ? { ...item, quantity: updatedQuantity } : item
@@ -77,12 +106,17 @@ const CartPage: React.FC = () => {
 
   const handleRemoveItem = async (id: string) => {
     try {
-      await axios.delete(`/api/cart`, { 
-        params: { id } 
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Unauthorized");
+      }
+
+      await axios.delete(`/api/cart`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { id },
       });
 
       setCartItems((prevItems) => prevItems.filter((item) => item._id !== id));
-    
     } catch (err: any) {
       console.error("Failed to remove item:", err.response?.data?.error);
     }
@@ -93,7 +127,7 @@ const CartPage: React.FC = () => {
       .reduce((total, item) => total + item.price * item.quantity, 0)
       .toFixed(2);
 
-  if (loading || status === "loading") {
+  if (loading) {
     return (
       <Box
         sx={{

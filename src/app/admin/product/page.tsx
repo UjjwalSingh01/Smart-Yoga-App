@@ -19,6 +19,7 @@ type Product = {
   shippingPolicy: string;
 };
 
+
 const AdminProductPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isAddModalOpen, setAddModalOpen] = useState(false);
@@ -69,40 +70,75 @@ const AdminProductPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Manage Products
-      </Typography>
+    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Typography variant="h4" gutterBottom textAlign="center">
+      Manage Products
+    </Typography>
 
-      <Button
-        variant="contained"
-        startIcon={<AddIcon />}
-        onClick={() => setAddModalOpen(true)}
-        sx={{ mb: 4 }}
-      >
-        Add Product
-      </Button>
+    <Button
+      variant="contained"
+      startIcon={<AddIcon />}
+      onClick={() => setAddModalOpen(true)}
+      sx={{ mb: 4, display: "block", mx: "auto" }}
+    >
+      Add Product
+    </Button>
 
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-        {products.map((product) => (
-          <Card key={product._id} sx={{ width: 300 }}>
-            <CardMedia
-              component="img"
-              image={product.image}
-              alt={product.title}
-              sx={{ height: 200 }}
-            />
-            <CardContent>
-              <Typography variant="h6">{product.title}</Typography>
-              <Typography variant="body2" color="text.secondary">
-                {product.description}
-              </Typography>
-              <Typography variant="body1">
-                Price: ${product.price} | Discounted Price: ${product.discountedPrice}
-              </Typography>
-              <Typography variant="body2">Quantity: {product.quantity}</Typography>
-              <Typography variant="body2">Policy: {product.policy}</Typography>
-              <Typography variant="body2">Shipping Policy: {product.shippingPolicy}</Typography>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 4,
+      }}
+    >
+      {products.map((product) => (
+        <Card
+          key={product._id}
+          sx={{
+            width: "100%",
+            maxWidth: 600,
+            display: "flex",
+            flexDirection: "column",
+            boxShadow: 3,
+            transition: "transform 0.3s, box-shadow 0.3s",
+            "&:hover": {
+              transform: "scale(1.02)",
+              boxShadow: 6,
+            },
+            borderRadius: 2,
+          }}
+        >
+          <CardMedia
+            component="img"
+            image={product.image}
+            alt={product.title}
+            sx={{
+              height: 200,
+              borderTopLeftRadius: 8,
+              borderTopRightRadius: 8,
+            }}
+          />
+          <CardContent>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              {product.title}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              {product.description}
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 1 }}>
+              Price: ${product.price} | Discounted: ${product.discountedPrice}
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              Quantity: {product.quantity}
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              Policy: {product.policy}
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              Shipping Policy: {product.shippingPolicy}
+            </Typography>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 2 }}>
               <Button
                 variant="contained"
                 color="primary"
@@ -110,38 +146,33 @@ const AdminProductPage: React.FC = () => {
                   setSelectedProduct(product);
                   setEditModalOpen(true);
                 }}
-                sx={{ mt: 2, mr: 1 }}
               >
                 Edit
               </Button>
-              <Button
-                variant="contained"
-                color="error"
-                onClick={() => handleDeleteProduct(product._id)}
-                sx={{ mt: 2 }}
-              >
+              <Button variant="contained" color="error" onClick={() => handleDeleteProduct(product._id)}>
                 Delete
               </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
+            </Box>
+          </CardContent>
+        </Card>
+      ))}
+    </Box>
 
-      <AddProductModal
-        open={isAddModalOpen}
-        onClose={() => setAddModalOpen(false)}
-        onAdd={handleAddProduct}
-      />
-      {selectedProduct && (
-        <EditProductModal
-          open={isEditModalOpen}
-          onAdd={handleAddProduct}
-          onClose={() => setEditModalOpen(false)}
-          // product={selectedProduct}
-          // onEdit={handleEditProduct}
-        />
-      )}
-    </Container>
+    <AddProductModal
+      open={isAddModalOpen}
+      onClose={() => setAddModalOpen(false)}
+      onAdd={handleAddProduct}
+    />
+    {selectedProduct && (
+      <EditProductModal
+      open={isEditModalOpen}
+      onAdd={handleAddProduct}
+      onClose={() => setEditModalOpen(false)}
+      // product={selectedProduct}
+      // onEdit={handleEditProduct}
+    />
+    )}
+  </Container>
   );
 };
 

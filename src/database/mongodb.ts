@@ -2,8 +2,7 @@ import mongoose from 'mongoose';
 
 // Load environment variable or use fallback
 const MONGO_URI =
-  process.env.MONGO_URI ||
-  'mongodb+srv://dragneeln949:2Fk4sZpZOOl3rXvd@cluster0.trjr5.mongodb.net/?retryWrites=true&w=majority';
+  "mongodb+srv://dragneeln949:2Fk4sZpZOOl3rXvd@cluster0.trjr5.mongodb.net/?retryWrites=true&w=majority&tls=true";
 
 if (!MONGO_URI) {
   throw new Error('Please define the MONGO_URI environment variable');

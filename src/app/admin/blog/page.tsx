@@ -13,7 +13,6 @@ import AddIcon from "@mui/icons-material/Add";
 import BlogCard from "@/components/BlogCard";
 import AddBlogModal from "@/components/AddBlogModal";
 import axios from "axios";
-import { useSession, signIn } from "next-auth/react";
 
 type Blog = {
   id: string;
@@ -21,56 +20,62 @@ type Blog = {
   description: string;
   content: string;
   image: string;
-  date: string;
+  createdAt: string;
   creator: string;
   creatorRole: "admin" | "user";
   tags: string[];
 };
 
+
 const BlogPage: React.FC = () => {
-  const { data: session, status } = useSession();
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(true);
   const [search, setSearch] = useState("");
   const [filterDate, setFilterDate] = useState("");
   const [showOwnBlogs, setShowOwnBlogs] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      signIn();
-    }
-  }, [status]);
-
-  useEffect(() => {
     const fetchBlogs = async () => {
-      if (status === "authenticated") {
-        try {
-          const response = await axios.get(`/api/blogs`, {
-            params: { onlyUser: showOwnBlogs },
-          });
-          setBlogs(response.data);
-        } catch (err: any) {
-          setError(err.response?.data?.error || "Failed to fetch blogs");
-        } finally {
-          setLoading(false);
-        }
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("Unauthorized. Please sign in.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(`/api/blogs`, {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { onlyUser: showOwnBlogs },
+        });
+        setBlogs(response.data);
+      } catch (err: any) {
+        setError(err.response?.data?.error || "Failed to fetch blogs");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchBlogs();
-  }, [status, showOwnBlogs]);
+  }, [showOwnBlogs]);
 
-  const handleAddBlog = async (newBlog: Omit<Blog, "id" | "creator" | "creatorRole" | "date">) => {
-    if (status === "authenticated") {
-      try {
-        const response = await axios.post(`/api/blogs`, newBlog);
-        setBlogs((prevBlogs) => [response.data, ...prevBlogs]);
-        setIsModalOpen(false);
-      } catch (err: any) {
-        console.error("Failed to add blog:", err.response?.data?.error);
-      }
+  const handleAddBlog = async (newBlog: Omit<Blog, "id" | "creator" | "creatorRole" | "createdAt">) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Unauthorized. Please sign in.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(`/api/blogs`, newBlog, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setBlogs((prevBlogs) => [response.data, ...prevBlogs]);
+      setIsModalOpen(false);
+    } catch (err: any) {
+      console.error("Failed to add blog:", err.response?.data?.error);
     }
   };
 
@@ -78,11 +83,11 @@ const BlogPage: React.FC = () => {
     const matchesSearch =
       blog.title.toLowerCase().includes(search.toLowerCase()) ||
       blog.tags.some((tag) => tag.toLowerCase().includes(search.toLowerCase()));
-    const matchesDate = filterDate ? blog.date === filterDate : true;
+    const matchesDate = filterDate ? blog.createdAt === filterDate : true;
     return matchesSearch && matchesDate;
   });
 
-  if (loading || status === "loading") {
+  if (loading) {
     return (
       <Box
         sx={{
@@ -144,11 +149,29 @@ const BlogPage: React.FC = () => {
         </Button>
       </Box>
 
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        {filteredBlogs.map((blog) => (
-          <BlogCard key={blog.id} {...blog} />
-        ))}
-      </Box>
+      <Box
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      gap: 4,
+      alignItems: "center", // Align blogs to the center horizontally
+    }}
+  >
+    {filteredBlogs.map((blog) => (
+      <BlogCard
+        key={blog.id}
+        id={blog.id}
+        title={blog.title}
+        description={blog.description}
+        content={blog.content}
+        image={blog.image}
+        date={blog.createdAt} // Map createdAt to date
+        creator={blog.creator}
+        creatorRole={blog.creatorRole}
+        tags={blog.tags}
+      />
+    ))}
+  </Box>
 
       <AddBlogModal
         open={isModalOpen}

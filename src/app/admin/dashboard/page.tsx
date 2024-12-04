@@ -49,24 +49,24 @@ const dummyData: SalesData = {
   
 
 const AdminDashboard: React.FC = () => {
-  const [data, setData] = useState<SalesData | null>(dummyData);
+  const [data, setData] = useState<SalesData | null>();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const response = await axios.get<SalesData>("/api/admin/dashboard");
-//         setData(response.data);
-//       } catch (err: any) {
-//         setError(err.response?.data?.error || "Failed to fetch data");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get<SalesData>("/api/admin/dashboard");
+        setData(response.data);
+      } catch (err: any) {
+        setError(err.response?.data?.error || "Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-//     fetchData();
-//   }, []);
+    fetchData();
+  }, []);
 
   if (loading) {
     return (

@@ -5,7 +5,7 @@ import ProductCard from "@/components/ProductCard";
 
 type Product = {
   _id: string;
-  name: string;
+  title: string;
   price: number;
   discountedPrice: number;
   image: string;
@@ -21,7 +21,7 @@ export default function Home() {
   const products: Product[] = [
     {
       _id: "1",
-      name: "Yoga Mat",
+      title: "Yoga Mat",
       price: 49.99,
       discountedPrice: 39.99,
       image: "/images/yoga-mat.jpg",
@@ -30,30 +30,12 @@ export default function Home() {
     },
     {
       _id: "2",
-      name: "Yoga Blocks",
+      title: "Yoga Blocks",
       price: 29.99,
       discountedPrice: 24.99,
       image: "/images/yoga-blocks.jpg",
       shortDescription: "Lightweight supportive yoga blocks.",
       slug: "yoga-blocks",
-    },
-    {
-      _id: "3",
-      name: "Yoga Strap",
-      price: 19.99,
-      discountedPrice: 15.99,
-      image: "/images/yoga-strap.jpg",
-      shortDescription: "Durable yoga strap for stretching.",
-      slug: "yoga-strap",
-    },
-    {
-      _id: "4",
-      name: "Yoga Wheel",
-      price: 39.99,
-      discountedPrice: 29.99,
-      image: "/images/yoga-wheel.jpg",
-      shortDescription: "Helps with back stretches and flexibility.",
-      slug: "yoga-wheel",
     },
   ];
 
@@ -70,13 +52,10 @@ export default function Home() {
 
   return (
     <div>
-      {/* Hero Section */}
       <div className="bg-blue-500 text-white text-center py-8">
         <h1 className="text-4xl font-bold">Welcome to Smart Yoga Products</h1>
         <p className="mt-2">Explore the best yoga gear for your wellness journey.</p>
       </div>
-
-      {/* Product Listing Section */}
       <div className="py-8 px-4">
         <h2 className="text-2xl font-semibold mb-4">Our Products</h2>
         <div className="flex flex-wrap gap-4">
@@ -84,8 +63,6 @@ export default function Home() {
             <ProductCard key={product._id} product={product} addToCart={addToCart} />
           ))}
         </div>
-
-        {/* Pagination Controls */}
         <div className="flex justify-center mt-8 gap-4">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}

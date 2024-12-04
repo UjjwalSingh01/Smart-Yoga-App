@@ -1,17 +1,23 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from 'axios'
 
-const Add = ({
-  stockNumber,
-}: {
-  productId: string;
-  variantId: string;
-  stockNumber: number;
-}) => {
+const Add = ({ productId, stockNumber }: { productId: string; stockNumber: number;}) => {
   const [quantity, setQuantity] = useState(1);
 
-  const addItem = () => {
+  const addItem = async () => {
+    const token = localStorage.getItem("token");
+    if(!token){
+        throw new Error("Unauthorized")
+    }
 
+    try {
+        await axios.post("", productId, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+    } catch (error) {
+        console.error("Error in Ordering Items: ", error)
+    }
   }
 
   const handleQuantity = (type: "i" | "d") => {

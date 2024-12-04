@@ -14,7 +14,6 @@ type Product = {
   quantity: number;
   returnPolicy: string; 
   shippingPolicy: string; 
-  slug: string
 };
 
 

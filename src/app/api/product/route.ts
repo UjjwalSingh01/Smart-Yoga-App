@@ -21,6 +21,30 @@ export async function GET(req: NextRequest) {
   }
 }
 
+export async function GET_BY_ID(req: NextRequest) {
+    await connectToDatabase();
+  
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
+  
+    if (!id) {
+      return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
+    }
+  
+    try {
+      const product = await Product.findById(id);
+  
+      if (!product) {
+        return NextResponse.json({ error: "Product not found" }, { status: 404 });
+      }
+  
+      return NextResponse.json(product, { status: 200 });
+    } catch (error) {
+      console.log("Error fetching product:", error);
+      return NextResponse.json({ error: "Failed to fetch product" }, { status: 500 });
+    }
+  }
+
 // POST: Create a new product
 export async function POST(request: NextRequest) {
     try {

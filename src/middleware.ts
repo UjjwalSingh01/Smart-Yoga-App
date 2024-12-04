@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 export async function middleware(req: Request) {
   const url = new URL(req.url);
 
-  const excludedRoutes = ["/api/signin", "/api/signup", "/api/admin/signin"];
+  const excludedRoutes = ["/api/signin", "/api/signup", "/api/admin/signin", "/api/product"];
   if (excludedRoutes.some((route) => url.pathname.startsWith(route))) {
     return NextResponse.next();
   }
@@ -17,9 +17,7 @@ export async function middleware(req: Request) {
   }
 
   try {
-    console.log(token);
     const decoded = jwt.decode(token) as { id: string; email: string };
-    console.log(decoded);
 
     const response = NextResponse.next();
     response.headers.set("userId", decoded.id);

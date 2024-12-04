@@ -29,8 +29,9 @@ const SocialPage: React.FC = () => {
         if (!token) {
             throw new Error("Unauthorized");
         }
+
       try {
-        const response = await axios.get<SocialPost[]>("/api/social", {
+        const response = await axios.get("/api/social", {
             headers: { Authorization: `Bearer ${token}` },
         });
         setSocialPosts(response.data);
@@ -44,8 +45,15 @@ const SocialPage: React.FC = () => {
   }, []);
 
   const handleAddPost = async (newPost: Omit<SocialPost, "_id">) => {
+    const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("Unauthorized");
+        }
+    
     try {
-      const response = await axios.post<SocialPost>("/api/social", newPost);
+      const response = await axios.post("/api/social", newPost, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setSocialPosts((prev) => [response.data, ...prev]);
     } catch (error) {
       console.error("Failed to add post", error);

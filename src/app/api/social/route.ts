@@ -17,7 +17,16 @@ export async function POST(request: NextRequest) {
     await dbConnect();
     const data = await request.json();
 
-    const newSocialPost = await Social.create(data);
+    const newSocialPost = await Social.create({
+        platform: data.platform,
+        postLink: data.postLink,
+        mediaType: data.mediaType,
+        mediaUrl: data.mediaUrl,
+        description: data.description,
+        tags: data.tags,
+        datePosted: new Date() 
+    });
+
     return NextResponse.json(newSocialPost, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: `Failed to create social post: ${error}` }, { status: 500 });

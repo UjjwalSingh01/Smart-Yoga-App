@@ -3,7 +3,7 @@ import { Schema, Document, model, models } from "mongoose";
 export interface ISocialMediaPost extends Document {
   platform: string;
   postLink: string;
-  mediaType: "image" | "video" | "text";
+  mediaType: string;
   mediaUrl: string;
   description: string;
   tags: string[];
@@ -17,7 +17,6 @@ const SocialMediaPostSchema = new Schema<ISocialMediaPost>(
     mediaType: {
       type: String,
       required: true,
-      enum: ["image", "video", "text"],
     },
     mediaUrl: { type: String },
     description: { type: String, required: true },

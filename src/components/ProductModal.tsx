@@ -41,7 +41,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ open, onClose, onAdd 
   const handleSubmit = () => {
     onAdd(product);
     setProduct({
-      _id: "",
+      _id:"",
       title: "",
       description: "",
       price: 0,

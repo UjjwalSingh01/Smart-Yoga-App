@@ -19,7 +19,6 @@ type Product = {
 };
 
 
-
 const AdminProductPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isAddModalOpen, setAddModalOpen] = useState(false);
@@ -27,7 +26,7 @@ const AdminProductPage: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("/api/products");
+        const response = await axios.get("/api/product");
         setProducts(response.data);
       } catch (err) {
         console.error("Failed to fetch products:", err);
@@ -38,7 +37,7 @@ const AdminProductPage: React.FC = () => {
 
   const handleAddProduct = async (product: Product) => {
     try {
-      const response = await axios.post("/api/products", product);
+      const response = await axios.post("/api/product", product);
       setProducts((prevProducts) => [...prevProducts, response.data]);
       setAddModalOpen(false);
     } catch (err) {
@@ -48,7 +47,7 @@ const AdminProductPage: React.FC = () => {
 
   const handleDeleteProduct = async (id: string) => {
     try {
-      await axios.delete(`/api/products/${id}`);
+      await axios.delete(`/api/product/${id}`);
       setProducts((prevProducts) => prevProducts.filter((p) => p._id !== id));
     } catch (err) {
       console.error("Failed to delete product:", err);

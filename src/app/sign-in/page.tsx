@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import Link from "next/link";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -83,6 +84,18 @@ const SignIn = () => {
           >
             {admin ? "Switch to User Sign In" : "Sign In as Admin"}
           </p>
+        </div>
+
+        <div className="mt-4 text-center">
+          <Link
+            href={'/sign-up'}
+            className={`cursor-pointer text-sm ${
+              admin ? "text-red-500" : "text-blue-500"
+            } hover:underline`}
+            
+          >
+            New to App ? Sign Up
+          </Link>
         </div>
       </form>
     </div>

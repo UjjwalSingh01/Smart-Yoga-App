@@ -45,7 +45,7 @@ function ResponsiveAppBar() {
   const rightEndOptions = isAdmin
     ? [
         { label: "Profile", icon: <AccountCircleIcon />, action: () => console.log("Profile clicked") },
-        { label: "Logout", icon: <ExitToAppIcon />, action: () => console.log("Logout clicked") },
+        { label: "Logout", icon: <ExitToAppIcon />, action: () => handleLogout() },
       ]
     : [
         { label: "Profile", icon: <AccountCircleIcon />, action: () => console.log("Profile clicked") },

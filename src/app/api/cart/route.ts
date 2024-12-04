@@ -9,11 +9,54 @@ export async function GET(request: NextRequest) {
     if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const cartItems = await Cart.find({ user: userId }).populate("product");
-    return NextResponse.json(cartItems, { status: 200 });
+    
+    const transformedCartItems = cartItems.map((item) => ({
+      _id: item._id,
+      name: item.product.title,
+      description: item.product.description,
+      price: item.product.discountedPrice,
+      quantity: item.quantity,
+      image: item.product.image,
+    }));
+    
+    return NextResponse.json(transformedCartItems, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: `Failed to fetch cart items: ${error}` }, { status: 500 });
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    await dbConnect();
+
+    const userId = request.headers.get("userId");
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const { id } = await request.json();
+
+    const existingCartItem = await Cart.findOne({ user: userId, product: id });
+
+    if (existingCartItem) {
+      existingCartItem.quantity += 1;
+      await existingCartItem.save();
+      return NextResponse.json(existingCartItem, { status: 200 });
+    }
+
+    const newCartItem = await Cart.create({
+      user: userId,
+      product: id,
+      quantity: 1
+    });
+
+    return NextResponse.json(newCartItem, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: `Failed to add item to cart: ${error}` },
+      { status: 500 }
+    );
+  }
+}
+
 
 export async function PUT(request: NextRequest) {
   try {

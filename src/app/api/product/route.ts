@@ -22,18 +22,34 @@ export async function GET(req: NextRequest) {
 }
 
 // POST: Create a new product
-export async function POST(req: NextRequest) {
-  await connectToDatabase();
-
-  try {
-    const body = await req.json();
-    const product = await Product.create(body);
-    return NextResponse.json(product, { status: 201 });
-  } catch (error) {
-    console.log(error)
-    return NextResponse.json({ error: "Failed to create product" }, { status: 400 });
+export async function POST(request: NextRequest) {
+    try {
+      await dbConnect();
+  
+      const data = await request.json();
+  
+      const productData = {
+        title: data.title,
+        description: data.description,
+        price: parseFloat(data.price), 
+        discountedPrice: parseFloat(data.discountedPrice),
+        image: data.image,
+        quantity: parseInt(data.quantity, 10), 
+        returnPolicy: data.policy, 
+        shippingPolicy: data.shippingPolicy,
+      };
+  
+      const newProduct = await Product.create(productData);
+  
+      return NextResponse.json(newProduct, { status: 201 });
+    } catch (error) {
+      console.error("Error creating product:", error);
+      return NextResponse.json(
+        { error: `Failed to create product: ${error}` },
+        { status: 500 }
+      );
+    }
   }
-}
 
 // PATCH: Update an existing product
 export async function PATCH(req: NextRequest) {

@@ -19,7 +19,6 @@ type Product = {
 
 
 export default function Home() {
-  const [cart, setCart] = useState<string[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
@@ -29,7 +28,7 @@ export default function Home() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get<Product[]>("/api/products");
+      const response = await axios.get<Product[]>("/api/product");
       setProducts(response.data);
       setLoading(false);
     } catch (err) {
@@ -49,10 +48,26 @@ export default function Home() {
     currentPage * itemsPerPage
   );
 
-  const addToCart = (id: string) => {
-    console.log(cart);
-    setCart((prevCart) => [...prevCart, id]);
-    alert("Product added to cart!");
+  const addToCart = async (id: string) => {
+    const token = localStorage.getItem("token");
+      if (!token) {
+        setError("Unauthorized. Please sign in.");
+        setLoading(false);
+        return;
+      }
+
+    try {
+      await axios.post("/api/cart",
+        { id }, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+  
+      alert("Product added to cart!");
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+      alert("Failed to add product to cart. Please try again.");
+    }
   };
 
   if (loading) {

@@ -68,7 +68,7 @@ const ProductDetail = () => {
     }
 
     fetchDetails();
-  }, [])
+  }, [id])
 
   if (isLoading) {
     return (

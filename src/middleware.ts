@@ -6,7 +6,6 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 export async function middleware(req: Request) {
   const url = new URL(req.url);
 
-  // Exclude specific routes from token validation
   const excludedRoutes = ["/api/signin", "/api/signup", "/api/admin/signin"];
   if (excludedRoutes.some((route) => url.pathname.startsWith(route))) {
     return NextResponse.next();
@@ -23,7 +22,7 @@ export async function middleware(req: Request) {
     console.log(token);
     const decoded = jwt.decode(token) as { id: string; email: string };
     console.log(decoded);
-    // Add the userId to the request for downstream handlers
+
     const response = NextResponse.next();
     response.headers.set("userId", decoded.id);
     return response;
@@ -37,5 +36,5 @@ export async function middleware(req: Request) {
 }
 
 export const config = {
-  matcher: ["/api/:path*"], // Apply middleware to all API routes
+  matcher: ["/api/:path*"], 
 };

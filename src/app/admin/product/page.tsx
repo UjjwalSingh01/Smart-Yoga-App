@@ -23,8 +23,6 @@ type Product = {
 const AdminProductPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isAddModalOpen, setAddModalOpen] = useState(false);
-  const [isEditModalOpen, setEditModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -45,18 +43,6 @@ const AdminProductPage: React.FC = () => {
       setAddModalOpen(false);
     } catch (err) {
       console.error("Failed to add product:", err);
-    }
-  };
-
-  const handleEditProduct = async (product: Product) => {
-    try {
-      const response = await axios.patch(`/api/products/${product._id}`, product);
-      setProducts((prevProducts) =>
-        prevProducts.map((p) => (p._id === product._id ? response.data : p))
-      );
-      setEditModalOpen(false);
-    } catch (err) {
-      console.error("Failed to edit product:", err);
     }
   };
 
@@ -139,16 +125,6 @@ const AdminProductPage: React.FC = () => {
               Shipping Policy: {product.shippingPolicy}
             </Typography>
             <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 2 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  setSelectedProduct(product);
-                  setEditModalOpen(true);
-                }}
-              >
-                Edit
-              </Button>
               <Button variant="contained" color="error" onClick={() => handleDeleteProduct(product._id)}>
                 Delete
               </Button>
@@ -163,15 +139,6 @@ const AdminProductPage: React.FC = () => {
       onClose={() => setAddModalOpen(false)}
       onAdd={handleAddProduct}
     />
-    {selectedProduct && (
-      <EditProductModal
-      open={isEditModalOpen}
-      onAdd={handleAddProduct}
-      onClose={() => setEditModalOpen(false)}
-      // product={selectedProduct}
-      // onEdit={handleEditProduct}
-    />
-    )}
   </Container>
   );
 };

@@ -1,36 +1,35 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const MONGO_URI = process.env.DATABASE_URL || "";
-  
 
 if (!MONGO_URI) {
-  throw new Error('Please define the MONGO_URI environment variable');
+  throw new Error("Please define the MONGO_URI environment variable");
 }
 
 declare global {
-  var mongoose: {
+  var mongooseConnection: {
     conn: mongoose.Connection | null;
     promise: Promise<mongoose.Connection> | null;
   };
 }
 
-global.mongoose = global.mongoose || { conn: null, promise: null };
+globalThis.mongooseConnection = globalThis.mongooseConnection || { conn: null, promise: null };
 
 async function dbConnect() {
-  if (global.mongoose.conn) {
-    return global.mongoose.conn;
+  if (globalThis.mongooseConnection.conn) {
+    return globalThis.mongooseConnection.conn;
   }
 
-  if (!global.mongoose.promise) {
-    global.mongoose.promise = mongoose
+  if (!globalThis.mongooseConnection.promise) {
+    globalThis.mongooseConnection.promise = mongoose
       .connect(MONGO_URI, {
-        dbName: 'yourDatabaseName',
+        dbName: "yourDatabaseName",
       })
       .then((mongoose) => mongoose.connection);
   }
 
-  global.mongoose.conn = await global.mongoose.promise;
-  return global.mongoose.conn;
+  globalThis.mongooseConnection.conn = await globalThis.mongooseConnection.promise;
+  return globalThis.mongooseConnection.conn;
 }
 
 export default dbConnect;

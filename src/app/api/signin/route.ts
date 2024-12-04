@@ -20,11 +20,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid credentials." }, { status: 401 });
     }
 
-    // Convert ObjectId to string when creating the token
     const token = jwt.sign({ id: user._id.toString(), email: user.email }, JWT_SECRET, { expiresIn: "1d" });
 
     return NextResponse.json({ token }, { status: 200 });
   } catch (error) {
+    console.log(error);
     return NextResponse.json({ error: "Internal Server Error." }, { status: 500 });
   }
 }

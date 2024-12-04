@@ -24,8 +24,9 @@ const SignIn = () => {
 
       localStorage.setItem("token", data.token);
       router.push(admin ? "/admin/dashboard" : "/");
-    } catch (error: any) {
-      setError(error.response?.data?.error || "Invalid credentials");
+    } catch (error) {
+      setError("Invalid credentials");
+      console.log(error)
     }
   };
 

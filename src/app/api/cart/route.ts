@@ -10,8 +10,8 @@ export async function GET(request: NextRequest) {
 
     const cartItems = await Cart.find({ user: userId }).populate("product");
     return NextResponse.json(cartItems, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: `Failed to fetch cart items: ${error.message}` }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: `Failed to fetch cart items: ${error}` }, { status: 500 });
   }
 }
 
@@ -31,8 +31,8 @@ export async function PUT(request: NextRequest) {
     if (!updatedItem) return NextResponse.json({ error: "Item not found or not authorized" }, { status: 404 });
 
     return NextResponse.json(updatedItem, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: `Failed to update cart item: ${error.message}` }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: `Failed to update cart item: ${error}` }, { status: 500 });
   }
 }
 
@@ -49,7 +49,7 @@ export async function DELETE(request: NextRequest) {
     if (!deletedItem) return NextResponse.json({ error: "Item not found or not authorized" }, { status: 404 });
 
     return NextResponse.json({ message: "Item removed successfully" }, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: `Failed to delete cart item: ${error.message}` }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: `Failed to delete cart item: ${error}` }, { status: 500 });
   }
 }

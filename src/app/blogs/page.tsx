@@ -26,70 +26,6 @@ type Blog = {
   tags: string[];
 };
 
-const dummyBlogs: Blog[] = [
-  {
-    id: "1",
-    title: "The Benefits of Morning Yoga",
-    description: "Discover the amazing health benefits of practicing yoga in the morning.",
-    content:
-      "Morning yoga helps you kickstart your day with energy and positivity. It improves flexibility, reduces stress, and enhances overall well-being. Incorporate simple stretches and mindful breathing to feel rejuvenated.",
-    image: "https://via.placeholder.com/600x400?text=Morning+Yoga",
-    createdAt: "2024-01-10",
-    creator: "John Doe",
-    creatorRole: "admin",
-    tags: ["yoga", "health", "morning"],
-  },
-  {
-    id: "2",
-    title: "5 Essential Yoga Poses for Beginners",
-    description: "Learn the foundational yoga poses to start your practice.",
-    content:
-      "If you're new to yoga, start with poses like Downward Dog, Mountain Pose, and Child's Pose. These are simple yet effective poses that build strength and flexibility. Regular practice will improve your posture and balance.",
-    image: "https://via.placeholder.com/600x400?text=Beginner+Yoga",
-    createdAt: "2024-01-08",
-    creator: "Jane Smith",
-    creatorRole: "user",
-    tags: ["yoga", "beginner", "poses"],
-  },
-  {
-    id: "3",
-    title: "Mindfulness Through Yoga",
-    description: "Explore how yoga helps in achieving mindfulness and mental clarity.",
-    content:
-      "Yoga is not just about physical postures; it's also a mental discipline. Mindfulness through yoga can help reduce anxiety and increase focus. Practices like meditation and slow, intentional movements are great for mental clarity.",
-    image: "https://via.placeholder.com/600x400?text=Mindfulness+Yoga",
-    createdAt: "2024-01-05",
-    creator: "Emily Johnson",
-    creatorRole: "admin",
-    tags: ["mindfulness", "yoga", "mental health"],
-  },
-  {
-    id: "4",
-    title: "Yoga for Better Sleep",
-    description: "Techniques and poses to help you sleep better through yoga.",
-    content:
-      "Struggling with sleep? Yoga can help. Incorporate poses like Legs-Up-The-Wall and Corpse Pose before bed. They help calm the nervous system and prepare your body for restful sleep. Combine with deep breathing exercises for optimal results.",
-    image: "https://via.placeholder.com/600x400?text=Yoga+for+Sleep",
-    createdAt: "2024-01-03",
-    creator: "Mark Lee",
-    creatorRole: "user",
-    tags: ["yoga", "sleep", "well-being"],
-  },
-  {
-    id: "5",
-    title: "The History of Yoga",
-    description: "A brief overview of the origins and evolution of yoga.",
-    content:
-      "Yoga has its roots in ancient India, dating back thousands of years. It started as a spiritual discipline and evolved into the physical practice we know today. Learn about the different paths of yoga and their significance in modern times.",
-    image: "https://via.placeholder.com/600x400?text=History+of+Yoga",
-    createdAt: "2024-01-01",
-    creator: "Sarah Parker",
-    creatorRole: "admin",
-    tags: ["history", "yoga", "tradition"],
-  },
-];
-
-
 const BlogPage: React.FC = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -114,8 +50,9 @@ const BlogPage: React.FC = () => {
           params: { onlyUser: showOwnBlogs },
         });
         setBlogs(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.error || "Failed to fetch blogs");
+      } catch (err) {
+        console.log(err)
+        setError("Failed to fetch blogs");
       } 
       setLoading(false);
       
@@ -137,8 +74,9 @@ const BlogPage: React.FC = () => {
       });
       setBlogs((prevBlogs) => [response.data, ...prevBlogs]);
       setIsModalOpen(false);
-    } catch (err: any) {
-      console.error("Failed to add blog:", err.response?.data?.error);
+    } catch (err) {
+      console.log(err);
+      console.error("Failed to add blog:");
     }
   };
 

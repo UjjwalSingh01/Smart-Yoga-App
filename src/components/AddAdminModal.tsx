@@ -62,8 +62,9 @@ const AddAdminModal: React.FC<AddAdminModalProps> = ({ open, onClose, onAdd }) =
         role: "editor",
       });
       onClose();
-    } catch (err: any) {
-      setError(err.message || "Failed to add admin.");
+    } catch (err) {
+      setError("Failed to add admin.");
+      console.log(err);
     } finally {
       setLoading(false);
     }

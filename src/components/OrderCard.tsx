@@ -31,12 +31,11 @@ export default function OrderCard({
   products,
   totalAmount,
   orderedOn,
-  deliveredOn,
   status,
   address,
   onReorder,
 }: OrderCardProps) {
-  
+
   return (
     <Card
       sx={{

@@ -51,11 +51,11 @@ const BlogPage: React.FC = () => {
           params: { onlyUser: showOwnBlogs },
         });
         setBlogs(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.error || "Failed to fetch blogs");
-      } finally {
+      } catch (err) {
+        setError("Failed to fetch blogs:");
+        console.log(err);
+      } 
         setLoading(false);
-      }
     };
 
     fetchBlogs();
@@ -74,8 +74,8 @@ const BlogPage: React.FC = () => {
       });
       setBlogs((prevBlogs) => [response.data, ...prevBlogs]);
       setIsModalOpen(false);
-    } catch (err: any) {
-      console.error("Failed to add blog:", err.response?.data?.error);
+    } catch (err) {
+      console.error("Failed to add blog:", err);
     }
   };
 

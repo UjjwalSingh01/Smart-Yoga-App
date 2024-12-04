@@ -6,7 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
 import DashboardCard from "@/components/DashboardCard";
 import SalesChart from "@/components/SalesChart";
-import AddAdminModal from "@/components/AddAdminModal"; // Import AddAdminModal
+import AddAdminModal from "@/components/AddAdminModal";
 
 interface SalesData {
   productsSold: {
@@ -26,7 +26,7 @@ const AdminDashboard: React.FC = () => {
   const [data, setData] = useState<SalesData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [isAddAdminOpen, setIsAddAdminOpen] = useState(false); // Modal state
+  const [isAddAdminOpen, setIsAddAdminOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,11 +42,12 @@ const AdminDashboard: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setData(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.error || "Failed to fetch data.");
-      } finally {
+      } catch (err) {
+        setError("Failed to fetch data.");
+        console.log(err);
+      } 
         setLoading(false);
-      }
+    
     };
 
     fetchData();
@@ -64,9 +65,10 @@ const AdminDashboard: React.FC = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Admin added successfully!");
-      setIsAddAdminOpen(false); // Close modal after successful addition
-    } catch (err: any) {
-      alert(err.response?.data?.error || "Failed to add admin.");
+      setIsAddAdminOpen(false); 
+    } catch (err) {
+      alert("Failed to add admin.");
+      console.log(err);
     }
   };
 

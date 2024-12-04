@@ -1,27 +1,27 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/database/mongodb";
 import Product from "@/models/Product";
-import Cors from "cors";
+// import Cors from "cors";
 
-const cors = Cors({
-  methods: ["GET", "POST", "PATCH", "DELETE"],
-  origin: "*", 
-});
+// const cors = Cors({
+//   methods: ["GET", "POST", "PATCH", "DELETE"],
+//   origin: "*", 
+// });
 
 // Helper function to run middleware
-function runMiddleware(req: NextApiRequest, res: NextApiResponse, fn: Function) {
-  return new Promise((resolve, reject) => {
-    fn(req, res, (result: any) => {
-      if (result instanceof Error) {
-        return reject(result);
-      }
-      return resolve(result);
-    });
-  });
-}
+// function runMiddleware(req: NextApiRequest, res: NextApiResponse, fn: Function) {
+//   return new Promise((resolve, reject) => {
+//     fn(req, res, (result: any) => {
+//       if (result instanceof Error) {
+//         return reject(result);
+//       }
+//       return resolve(result);
+//     });
+//   });
+// }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  await runMiddleware(req, res, cors); 
+//   await runMiddleware(req, res, cors); 
   await dbConnect(); 
   const { method } = req;
 
@@ -29,8 +29,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const products = await Product.find({});
       return res.status(200).json(products);
-    } catch (error: any) {
-      return res.status(500).json({ error: error.message });
+    } catch (error) {
+      return res.status(500).json({ error: error });
     }
   }
 
@@ -38,8 +38,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const product = await Product.create(req.body);
       return res.status(201).json(product);
-    } catch (error: any) {
-      return res.status(400).json({ error: error.message });
+    } catch (error) {
+      return res.status(400).json({ error: error });
     }
   }
 
@@ -55,8 +55,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(404).json({ error: "Product not found" });
       }
       return res.status(200).json(updatedProduct);
-    } catch (error: any) {
-      return res.status(400).json({ error: error.message });
+    } catch (error) {
+      return res.status(400).json({ error: error });
     }
   }
 
@@ -72,8 +72,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(404).json({ error: "Product not found" });
       }
       return res.status(200).json({ message: "Product deleted successfully" });
-    } catch (error: any) {
-      return res.status(400).json({ error: error.message });
+    } catch (error) {
+      return res.status(400).json({ error: error });
     }
   }
 

@@ -13,10 +13,20 @@ import {
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material";
 
+type SocialMediaPost = {
+  platform: string;
+  postLink: string;
+  mediaType: string;
+  mediaUrl: string;
+  description: string;
+  tags: string[];
+  datePosted: string; 
+};
+
 type AddSocialMediaModalProps = {
   open: boolean;
   onClose: () => void;
-  onAdd: (socialPost: any) => void;
+  onAdd: (socialPost: SocialMediaPost) => void; 
 };
 
 const AddSocialMediaModal: React.FC<AddSocialMediaModalProps> = ({

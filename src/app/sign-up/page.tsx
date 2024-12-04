@@ -19,9 +19,10 @@ const SignUp = () => {
 
     try {
       await axios.post("/api/signup", formData);
-      router.push("/sign-in"); // Redirect to sign-in page
-    } catch (error: any) {
-      setError(error.response?.data?.error || "An error occurred");
+      router.push("/sign-in"); 
+    } catch (error) {
+      setError("An error occurred");
+      console.log(error)
     }
   };
 

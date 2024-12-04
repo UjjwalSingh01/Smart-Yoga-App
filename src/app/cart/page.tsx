@@ -26,33 +26,6 @@ type CartItem = {
   image: string;
 };
 
-const dummyCartItems: CartItem[] = [
-  {
-    _id: "1",
-    name: "Yoga Mat",
-    description: "Eco-friendly, non-slip yoga mat for all fitness levels.",
-    price: 39.99,
-    quantity: 2,
-    image: "https://via.placeholder.com/140?text=Yoga+Mat",
-  },
-  {
-    _id: "2",
-    name: "Yoga Blocks",
-    description: "Lightweight and durable yoga blocks for better flexibility.",
-    price: 14.99,
-    quantity: 3,
-    image: "https://via.placeholder.com/140?text=Yoga+Blocks",
-  },
-  {
-    _id: "3",
-    name: "Yoga Strap",
-    description: "Stretch and strengthen with this durable yoga strap.",
-    price: 9.99,
-    quantity: 1,
-    image: "https://via.placeholder.com/140?text=Yoga+Strap",
-  },
-];
-
 const CartPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -70,11 +43,11 @@ const CartPage: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCartItems(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.error || "Failed to fetch cart items");
-      } finally {
+      } catch (err) {
+        setError( "Failed to fetch cart items");
+        console.log(err);
+      } 
         setLoading(false);
-      }
     };
 
     fetchCartItems();
@@ -99,8 +72,8 @@ const CartPage: React.FC = () => {
           item._id === id ? { ...item, quantity: updatedQuantity } : item
         )
       );
-    } catch (err: any) {
-      console.error("Failed to update quantity:", err.response?.data?.error);
+    } catch (err) {
+      console.error("Failed to update quantity:", err);
     }
   };
 
@@ -117,8 +90,8 @@ const CartPage: React.FC = () => {
       });
 
       setCartItems((prevItems) => prevItems.filter((item) => item._id !== id));
-    } catch (err: any) {
-      console.error("Failed to remove item:", err.response?.data?.error);
+    } catch (err) {
+      console.error("Failed to remove item:", err);
     }
   };
 

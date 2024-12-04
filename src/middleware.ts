@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
-
 export async function middleware(req: Request) {
   const url = new URL(req.url);
 

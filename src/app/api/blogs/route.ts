@@ -2,12 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/database/mongodb";
 import Blog from "@/models/Blog";
 
-// GET: Fetch all blogs
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
 
-    // Get userId directly from request headers
     const userId = request.headers.get("userId");
     const { searchParams } = new URL(request.url);
     const onlyUser = searchParams.get("onlyUser") === "true";
@@ -16,17 +14,15 @@ export async function GET(request: NextRequest) {
     const blogs = await Blog.find(filter).populate("creator", "fullname");
 
     return NextResponse.json(blogs, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: `Failed to fetch blogs: ${error.message}` }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: `Failed to fetch blogs: ${error}` }, { status: 500 });
   }
 }
 
-// POST: Create a new blog
 export async function POST(request: NextRequest) {
   try {
     await dbConnect();
 
-    // Get userId directly from request headers
     const userId = request.headers.get("userId");
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -46,17 +42,15 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(newBlog, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json({ error: `Failed to create blog: ${error.message}` }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: `Failed to create blog: ${error}` }, { status: 500 });
   }
 }
 
-// PATCH: Update a blog
 export async function PATCH(request: NextRequest) {
   try {
     await dbConnect();
 
-    // Get userId directly from request headers
     const userId = request.headers.get("userId");
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -85,17 +79,15 @@ export async function PATCH(request: NextRequest) {
     }
 
     return NextResponse.json(blog, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: `Failed to update blog: ${error.message}` }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: `Failed to update blog: ${error}` }, { status: 500 });
   }
 }
 
-// DELETE: Remove a blog
 export async function DELETE(request: NextRequest) {
   try {
     await dbConnect();
 
-    // Get userId directly from request headers
     const userId = request.headers.get("userId");
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -117,7 +109,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     return NextResponse.json({ message: "Blog deleted successfully" }, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: `Failed to delete blog: ${error.message}` }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: `Failed to delete blog: ${error}` }, { status: 500 });
   }
 }

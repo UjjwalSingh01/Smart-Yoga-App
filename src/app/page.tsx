@@ -19,7 +19,7 @@ type Product = {
 
 
 export default function Home() {
-  const [cart, setCart] = useState<string[]>([]);
+  const [_, setCart] = useState<string[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
@@ -32,8 +32,9 @@ export default function Home() {
       const response = await axios.get<Product[]>("/api/products");
       setProducts(response.data);
       setLoading(false);
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Failed to fetch products");
+    } catch (err) {
+      setError("Failed to fetch products");
+      console.log(err)
       setLoading(false);
     }
   };

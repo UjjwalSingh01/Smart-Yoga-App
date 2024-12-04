@@ -3,10 +3,21 @@
 import React, { useState } from "react";
 import { Modal, Box, TextField, Button, Typography } from "@mui/material";
 
+type ProductType = {
+  title: string;
+  description: string;
+  price: number;
+  discountedPrice: number;
+  image: string;
+  quantity: number;
+  policy: string;
+  shippingPolicy: string;
+};
+
 type AddProductModalProps = {
   open: boolean;
   onClose: () => void;
-  onAdd: (product: any) => void;
+  onAdd: (product: ProductType) => void; 
 };
 
 const AddProductModal: React.FC<AddProductModalProps> = ({ open, onClose, onAdd }) => {

@@ -12,19 +12,18 @@ import {
 } from "@mui/material";
 
 type BlogCardProps = {
-  id: string; // MongoDB ObjectId
+  id: string; 
   title: string;
   description: string;
   content: string;
   image: string;
   date: string;
-  creator: string; // Creator's name or identifier
+  creator: string;
   creatorRole: "admin" | "user";
   tags: string[];
 };
 
 const BlogCard: React.FC<BlogCardProps> = ({
-  id,
   title,
   description,
   content,

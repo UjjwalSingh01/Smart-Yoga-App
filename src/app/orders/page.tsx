@@ -20,63 +20,6 @@ type Order = {
   address: string;
 };
 
-const dummyOrders: Order[] = [
-  {
-    id: "order1",
-    products: [
-      {
-        productName: "Yoga Mat",
-        productImage: "https://via.placeholder.com/100x100?text=Yoga+Mat",
-        quantity: 1,
-        price: 39.99,
-      },
-      {
-        productName: "Yoga Blocks",
-        productImage: "https://via.placeholder.com/100x100?text=Yoga+Blocks",
-        quantity: 2,
-        price: 19.99,
-      },
-    ],
-    totalAmount: 79.97,
-    orderedOn: "2024-01-01",
-    deliveredOn: "2024-01-05",
-    status: "DELIVERED",
-    address: "123 Yoga Lane, Wellness City, YG 12345",
-  },
-  {
-    id: "order2",
-    products: [
-      {
-        productName: "Yoga Strap",
-        productImage: "https://via.placeholder.com/100x100?text=Yoga+Strap",
-        quantity: 3,
-        price: 15.99,
-      },
-    ],
-    totalAmount: 47.97,
-    orderedOn: "2024-01-10",
-    deliveredOn: null,
-    status: "SHIPPED",
-    address: "456 Zen Street, Fitness Town, ZN 67890",
-  },
-  {
-    id: "order3",
-    products: [
-      {
-        productName: "Yoga Wheel",
-        productImage: "https://via.placeholder.com/100x100?text=Yoga+Wheel",
-        quantity: 1,
-        price: 29.99,
-      },
-    ],
-    totalAmount: 29.99,
-    orderedOn: "2024-01-15",
-    deliveredOn: null,
-    status: "PENDING",
-    address: "789 Serenity Avenue, Harmony Village, SM 11223",
-  },
-];
-
 export default function OrdersPage(): React.ReactElement {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -99,8 +42,9 @@ export default function OrdersPage(): React.ReactElement {
           },
         });
         setOrders(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.error || "Failed to fetch orders");
+      } catch (err) {
+        setError("Failed to fetch orders");
+        console.log(err);
       } finally {
         setLoading(false);
       }

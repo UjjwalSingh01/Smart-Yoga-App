@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-const MONGO_URL = process.env.MONGO_URL || "";
+const MONGO_URI = process.env.MONGO_URI || "";
 
-if (!MONGO_URL) {
+if (!MONGO_URI) {
   throw new Error("Please define the MONGO_URI environment variable");
 }
 
@@ -25,7 +25,7 @@ async function dbConnect() {
 
   if (!globalThis.mongooseConnection.promise) {
     globalThis.mongooseConnection.promise = mongoose
-      .connect(MONGO_URL, {
+      .connect(MONGO_URI, {
         dbName: "yourDatabaseName",
       })
       .then((mongoose) => mongoose.connection);

@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { Container, Typography, Box, Button, Card, CardContent, CardMedia } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import AddProductModal from "@/components/ProductModal";
-import EditProductModal from "@/components/ProductModal";
 import axios from "axios";
 
 type Product = {
@@ -18,6 +17,7 @@ type Product = {
   policy: string;
   shippingPolicy: string;
 };
+
 
 
 const AdminProductPage: React.FC = () => {

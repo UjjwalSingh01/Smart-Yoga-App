@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Modal, Box, TextField, Button, Typography } from "@mui/material";
 
 type ProductType = {
+  _id: string;
   title: string;
   description: string;
   price: number;
@@ -22,6 +23,7 @@ type AddProductModalProps = {
 
 const AddProductModal: React.FC<AddProductModalProps> = ({ open, onClose, onAdd }) => {
   const [product, setProduct] = useState({
+    _id: "",
     title: "",
     description: "",
     price: 0,
@@ -39,6 +41,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ open, onClose, onAdd 
   const handleSubmit = () => {
     onAdd(product);
     setProduct({
+      _id: "",
       title: "",
       description: "",
       price: 0,

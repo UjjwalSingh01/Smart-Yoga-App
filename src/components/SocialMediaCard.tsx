@@ -6,7 +6,7 @@ import { Box, Typography, Card, CardMedia, CardContent, Chip, Link } from "@mui/
 type SocialMediaCardProps = {
   platform: string;
   postLink: string;
-  mediaType: "image" | "video" | "text";
+  mediaType: string;
   mediaUrl: string;
   description: string;
   tags: string[];

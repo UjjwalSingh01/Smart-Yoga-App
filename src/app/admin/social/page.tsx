@@ -11,7 +11,7 @@ type SocialPost = {
   _id: string;
   platform: string;
   postLink: string;
-  mediaType: "image" | "video" | "text";
+  mediaType: string;
   mediaUrl: string;
   description: string;
   tags: string[];

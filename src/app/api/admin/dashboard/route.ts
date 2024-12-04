@@ -65,8 +65,9 @@ const getSalesData = async (): Promise<SalesData> => {
   return { productsSold, sales, salesByMonth };
 };
 
-export async function GET(_: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
+    console.log(req);
     const data = await getSalesData();
     return NextResponse.json(data, { status: 200 });
   } catch (error) {

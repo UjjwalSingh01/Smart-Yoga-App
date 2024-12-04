@@ -6,12 +6,15 @@ if (!MONGO_URI) {
   throw new Error("Please define the MONGO_URI environment variable");
 }
 
+/* eslint-disable no-var */
 declare global {
   var mongooseConnection: {
     conn: mongoose.Connection | null;
     promise: Promise<mongoose.Connection> | null;
   };
 }
+/* eslint-enable no-var */
+
 
 globalThis.mongooseConnection = globalThis.mongooseConnection || { conn: null, promise: null };
 

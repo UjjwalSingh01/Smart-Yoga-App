@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/database/mongodb";
 import Order from "@/models/Order";
 
-// GET /api/orders - Fetch all orders for authenticated user
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
@@ -14,12 +13,11 @@ export async function GET(request: NextRequest) {
 
     const orders = await Order.find({ user: userId }).populate("products.product");
     return NextResponse.json(orders, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: `Failed to fetch orders: ${error.message}` }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: `Failed to fetch orders: ${error}` }, { status: 500 });
   }
 }
 
-// POST /api/orders - Add a new order
 export async function POST(request: NextRequest) {
   try {
     await dbConnect();
@@ -53,12 +51,11 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(newOrder, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json({ error: `Failed to add order: ${error.message}` }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: `Failed to add order: ${error}` }, { status: 500 });
   }
 }
 
-// DELETE /api/orders/:id - Delete an order
 export async function DELETE(request: NextRequest) {
   try {
     await dbConnect();
@@ -81,7 +78,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     return NextResponse.json({ message: "Order deleted successfully" }, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: `Failed to delete order: ${error.message}` }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: `Failed to delete order: ${error}` }, { status: 500 });
   }
 }

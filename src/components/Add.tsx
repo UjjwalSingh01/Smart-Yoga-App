@@ -2,8 +2,6 @@
 import { useState } from "react";
 
 const Add = ({
-  productId,
-  variantId,
   stockNumber,
 }: {
   productId: string;

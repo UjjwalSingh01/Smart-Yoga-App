@@ -19,7 +19,7 @@ type Product = {
 
 
 export default function Home() {
-  const [_, setCart] = useState<string[]>([]);
+  const [cart, setCart] = useState<string[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
@@ -50,6 +50,7 @@ export default function Home() {
   );
 
   const addToCart = (id: string) => {
+    console.log(cart);
     setCart((prevCart) => [...prevCart, id]);
     alert("Product added to cart!");
   };

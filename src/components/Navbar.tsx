@@ -17,20 +17,35 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { useState } from "react";
 import { useMediaQuery, useTheme } from "@mui/material";
+import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
-const pages = ["Products", "Blog", "Social", "Orders"];
-const rightEndOptions = [
-  { label: "Profile", icon: <AccountCircleIcon />, action: () => console.log("Profile clicked") },
-  { label: "Cart", icon: <ShoppingCartIcon />, action: () => console.log("Cart clicked") },
-  { label: "Logout", icon: <ExitToAppIcon />, action: () => console.log("Logout clicked") },
-];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const pathname = usePathname();
 
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("md")); // Large screens (md and above)
+
+  const isAdmin = pathname.startsWith("/admin");
+
+  // Define navigation options based on user or admin role
+  const pages = isAdmin
+    ? ["Dashboard", "Product", "Blogs", "Social"]
+    : ["Product", "Blogs", "Social", "Orders"];
+
+  const rightEndOptions = isAdmin
+    ? [
+        { label: "Profile", icon: <AccountCircleIcon />, action: () => console.log("Profile clicked") },
+        { label: "Logout", icon: <ExitToAppIcon />, action: () => console.log("Logout clicked") },
+      ]
+    : [
+        { label: "Profile", icon: <AccountCircleIcon />, action: () => console.log("Profile clicked") },
+        { label: "Cart", icon: <ShoppingCartIcon />, action: () => console.log("Cart clicked") },
+        { label: "Logout", icon: <ExitToAppIcon />, action: () => signOut({ callbackUrl: "/login" }) },
+      ];
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -67,7 +82,7 @@ function ResponsiveAppBar() {
               textDecoration: "none",
             }}
           >
-            LOGO
+            YOGA SHOP
           </Typography>
 
           {/* Hamburger Menu for Small Screens */}
@@ -123,7 +138,7 @@ function ResponsiveAppBar() {
               textDecoration: "none",
             }}
           >
-            LOGO
+            YOGA SHOP
           </Typography>
 
           {/* Pages for Large Screens */}
@@ -131,7 +146,7 @@ function ResponsiveAppBar() {
             {pages.map((page) => (
               <Button
                 key={page}
-                href={`/${page.toLowerCase()}`}
+                href={isAdmin ? `/admin/${page.toLowerCase()}` : `/${page.toLowerCase()}`}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
                 {page}

@@ -4,104 +4,81 @@ import React, { useEffect, useState } from "react";
 import { Container, Typography, Box, CircularProgress } from "@mui/material";
 import OrderCard from "@/components/OrderCard";
 import axios from "axios";
+import { useSession, signIn } from "next-auth/react";
 
 type Order = {
-  id: number;
-  productImage: string;
-  productName: string;
-  cost: string;
+  id: string; // MongoDB ObjectId
+  products: {
+    productName: string;
+    productImage: string;
+    quantity: number;
+    price: number;
+  }[];
+  totalAmount: number;
   orderedOn: string;
   deliveredOn: string | null;
-  status: "DELIVERED" | "ARRIVING" | "CANCELLED";
+  status: "DELIVERED" | "SHIPPED" | "PENDING" | "CANCELLED";
   address: string;
 };
 
-// Mock data for orders
-const orders: Order[] = [
-  {
-    id: 1,
-    productImage: "/static/images/yoga-mat.jpg",
-    productName: "Yoga Mat",
-    cost: "$49.99",
-    orderedOn: "2024-11-20",
-    deliveredOn: "2024-11-25",
-    status: "DELIVERED",
-    address: "123 Yoga Street, Wellness City, WC 12345",
-  },
-  {
-    id: 2,
-    productImage: "/static/images/yoga-blocks.jpg",
-    productName: "Yoga Blocks",
-    cost: "$29.99",
-    orderedOn: "2024-11-22",
-    deliveredOn: null,
-    status: "ARRIVING",
-    address: "456 Health Avenue, Fitness Town, FT 67890",
-  },
-  {
-    id: 3,
-    productImage: "/static/images/yoga-strap.jpg",
-    productName: "Smart Yoga Strap",
-    cost: "$79.99",
-    orderedOn: "2024-11-15",
-    deliveredOn: "2024-11-20",
-    status: "CANCELLED",
-    address: "789 Balance Road, Calm City, CC 10111",
-  },
-];
-
 export default function OrdersPage(): React.ReactElement {
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-  
-    const userId = "YOUR_USER_ID"; // Replace with actual user ID from authentication context
-  
-    useEffect(() => {
-      const fetchOrders = async () => {
+  const { data: session, status } = useSession();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Redirect to sign-in if unauthenticated
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      signIn();
+    }
+  }, [status]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (status === "authenticated") {
         try {
-          const response = await axios.get(`/api/orders`, {
-            params: { userId }, // Pass userId as a query parameter
-          });
+          const response = await axios.get(`/api/orders`);
           setOrders(response.data); // Axios automatically parses JSON
-          setLoading(false);
         } catch (err: any) {
           setError(err.response?.data?.error || "Failed to fetch orders");
+        } finally {
           setLoading(false);
         }
-      };
-  
-      fetchOrders();
-    }, []);
-  
-    const handleReorder = (productName: string): void => {
-      console.log(`Reordered: ${productName}`);
+      }
     };
-  
-    if (loading) {
-      return (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      );
-    }
-  
-    if (error) {
-      return (
-        <Container maxWidth="lg" sx={{ py: 4 }}>
-          <Typography variant="h6" color="error">
-            {error}
-          </Typography>
-        </Container>
-      );
-    }
+
+    fetchOrders();
+  }, [status]);
+
+  const handleReorder = (orderId: string): void => {
+    console.log(`Reordered: Order ${orderId}`);
+  };
+
+  if (loading || status === "loading") {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Typography variant="h6" color="error">
+          {error}
+        </Typography>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -114,14 +91,14 @@ export default function OrdersPage(): React.ReactElement {
       {orders.map((order) => (
         <OrderCard
           key={order.id}
-          productImage={order.productImage}
-          productName={order.productName}
-          cost={order.cost}
+          orderId={order.id}
+          products={order.products}
+          totalAmount={order.totalAmount}
           orderedOn={order.orderedOn}
           deliveredOn={order.deliveredOn}
           status={order.status}
           address={order.address}
-          onReorder={() => handleReorder(order.productName)}
+          onReorder={() => handleReorder(order.id)}
         />
       ))}
     </Container>

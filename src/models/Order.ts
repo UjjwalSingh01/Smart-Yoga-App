@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, model, models } from 'mongoose';
+import mongoose, { Schema, Document, model, models } from "mongoose";
 
 export interface IOrder extends Document {
   user: mongoose.Types.ObjectId; // Reference to User
@@ -8,29 +8,31 @@ export interface IOrder extends Document {
     price: number; // Product price at the time of order
   }[];
   totalAmount: number;
-  status: 'PENDING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+  status: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+  address: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const OrderSchema = new Schema<IOrder>(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     products: [
       {
-        product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+        product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
         quantity: { type: Number, required: true },
-        price: { type: Number, required: true }, // Price when the product was ordered
+        price: { type: Number, required: true },
       },
     ],
     totalAmount: { type: Number, required: true },
     status: {
       type: String,
-      enum: ['PENDING', 'SHIPPED', 'DELIVERED', 'CANCELLED'],
-      default: 'PENDING',
+      enum: ["PENDING", "SHIPPED", "DELIVERED", "CANCELLED"],
+      default: "PENDING",
     },
+    address: { type: String, required: true },
   },
-  { timestamps: true } // Automatically adds createdAt and updatedAt
+  { timestamps: true }
 );
 
-export default models.Order || model<IOrder>('Order', OrderSchema);
+export default models.Order || model<IOrder>("Order", OrderSchema);

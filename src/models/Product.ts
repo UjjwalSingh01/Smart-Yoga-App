@@ -1,21 +1,25 @@
-import mongoose, { Schema, Document, model, models } from 'mongoose';
+import mongoose, { Schema, model, models, Document } from "mongoose";
 
 export interface IProduct extends Document {
-  name: string;
+  title: string;
   description: string;
   price: number;
+  discountedPrice: number;
   image: string;
-  discount: number; // Discount percentage
-  createdAt: Date;
+  quantity: number;
+  returnPolicy: string;
+  shippingPolicy: string;
 }
 
 const ProductSchema = new Schema<IProduct>({
-  name: { type: String, required: true },
+  title: { type: String, required: true },
   description: { type: String, required: true },
   price: { type: Number, required: true },
+  discountedPrice: { type: Number, required: true },
   image: { type: String, required: true },
-  discount: { type: Number, default: 0 }, // Default 0% discount
-  createdAt: { type: Date, default: Date.now },
+  quantity: { type: Number, required: true },
+  returnPolicy: { type: String, required: true },
+  shippingPolicy: { type: String, required: true },
 });
 
-export default models.Product || model<IProduct>('Product', ProductSchema);
+export default models.Product || model<IProduct>("Product", ProductSchema);

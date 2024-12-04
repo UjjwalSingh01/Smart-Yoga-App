@@ -10,6 +10,7 @@ async function connectToDatabase() {
 // GET: Fetch all products
 export async function GET(req: NextRequest) {
   await connectToDatabase();
+  console.log(req)
 
   try {
     const products = await Product.find({});

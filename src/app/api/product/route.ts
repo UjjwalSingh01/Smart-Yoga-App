@@ -9,41 +9,33 @@ async function connectToDatabase() {
 
 // GET: Fetch all products
 export async function GET(req: NextRequest) {
-  await connectToDatabase();
-  console.log(req)
-
-  try {
-    const products = await Product.find({});
-    return NextResponse.json(products, { status: 200 });
-  } catch (error) {
-    console.log(error)
-    return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 });
-  }
-}
-
-export async function GET_BY_ID(req: NextRequest) {
     await connectToDatabase();
   
-    const url = new URL(req.url);
-    const id = url.searchParams.get("id");
-  
-    if (!id) {
-      return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
-    }
-  
     try {
-      const product = await Product.findById(id);
+      const url = new URL(req.url);
+      const id = url.searchParams.get("id");
   
-      if (!product) {
-        return NextResponse.json({ error: "Product not found" }, { status: 404 });
+      if (id) {
+        const product = await Product.findById(id);
+  
+        if (!product) {
+          return NextResponse.json({ error: "Product not found" }, { status: 404 });
+        }
+  
+        return NextResponse.json(product, { status: 200 });
+      } else {
+        const products = await Product.find({});
+        return NextResponse.json(products, { status: 200 });
       }
-  
-      return NextResponse.json(product, { status: 200 });
     } catch (error) {
-      console.log("Error fetching product:", error);
-      return NextResponse.json({ error: "Failed to fetch product" }, { status: 500 });
+      console.error("Error fetching products:", error);
+      return NextResponse.json(
+        { error: "Failed to fetch products" },
+        { status: 500 }
+      );
     }
   }
+
 
 // POST: Create a new product
 export async function POST(request: NextRequest) {

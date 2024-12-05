@@ -38,11 +38,11 @@ function ResponsiveAppBar() {
     router.push("/sign-in");
   };
 
-  // const handleLogIn = () => {    
-  //   router.push("/");
-  // };
+  const handleLogIn = () => {    
+    router.push("/");
+  };
 
-  // const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token") != null;
 
   const pages = isAdmin
     ? ["Dashboard", "Product", "Blog", "Social"]
@@ -51,16 +51,16 @@ function ResponsiveAppBar() {
   const rightEndOptions = isAdmin
     ? [
         { label: "Profile", icon: <AccountCircleIcon />, action: () => console.log("Profile clicked") },
-        // token ?
+        token ?
         { label: "Logout", icon: <ExitToAppIcon />, action: () => handleLogout() }
-        // : { label: "Login", icon: <ExitToAppIcon />, action: () => handleLogIn() }
+        : { label: "Login", icon: <ExitToAppIcon />, action: () => handleLogIn() }
       ]
     : [
         { label: "Profile", icon: <AccountCircleIcon />, action: () => console.log("Profile clicked") },
         { label: "Cart", icon: <ShoppingCartIcon />, action: () => router.push("/cart"), },
-        // token ?
+        token ?
         { label: "Logout", icon: <ExitToAppIcon />, action: () => handleLogout() }
-        // : { label: "Login", icon: <ExitToAppIcon />, action: () => handleLogIn() }
+        : { label: "Login", icon: <ExitToAppIcon />, action: () => handleLogIn() }
       ];
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {

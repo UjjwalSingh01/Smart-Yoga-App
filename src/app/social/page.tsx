@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { Container, Box, CircularProgress, Typography } from "@mui/material";
 import SocialMediaCard from "@/components/SocialMediaCard";
 import axios from "axios";
-import { useRouter } from "next/router";
 
 type SocialPost = {
   _id: string;
@@ -19,7 +18,6 @@ type SocialPost = {
 
 
 const SocialPage: React.FC = () => {
-  const router = useRouter();
   const [socialPosts, setSocialPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +25,6 @@ const SocialPage: React.FC = () => {
     const fetchPosts = async () => {
         const token = localStorage.getItem("token");
         if (!token) {
-            router.push('/sign-in')
             throw new Error("Unauthorized");
             }
         try {

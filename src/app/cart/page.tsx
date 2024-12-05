@@ -16,7 +16,6 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
-import { useRouter } from "next/router";
 
 type CartItem = {
   _id: string;
@@ -28,7 +27,6 @@ type CartItem = {
 };
 
 const CartPage: React.FC = () => {
-  const router = useRouter();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +36,6 @@ const CartPage: React.FC = () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          router.push('/sign-in')
           throw new Error("Unauthorized");
         }
 

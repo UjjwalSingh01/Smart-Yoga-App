@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { Container, Typography, Box, CircularProgress } from "@mui/material";
 import OrderCard from "@/components/OrderCard";
 import axios from "axios";
-import { useRouter } from "next/router";
 
 type Order = {
   id: string; 
@@ -22,7 +21,6 @@ type Order = {
 };
 
 export default function OrdersPage(): React.ReactElement {
-  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +30,6 @@ export default function OrdersPage(): React.ReactElement {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        router.push('/sign-in')
         setError("You must be logged in to view your orders.");
         setLoading(false);
         return;

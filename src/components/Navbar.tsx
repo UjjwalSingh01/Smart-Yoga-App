@@ -39,7 +39,7 @@ function ResponsiveAppBar() {
   };
 
   const handleLogIn = () => {    
-    router.push("/");
+    router.push("/sign-in");
   };
 
   const pages = isAdmin

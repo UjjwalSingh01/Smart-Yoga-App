@@ -42,6 +42,7 @@ const BlogPage: React.FC = () => {
     const fetchBlogs = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
+        router.push('/sign-in')
         setError("Unauthorized. Please sign in.");
         setLoading(false);
         return;
@@ -66,7 +67,6 @@ const BlogPage: React.FC = () => {
   const handleAddBlog = async (newBlog: Omit<Blog, "id" | "creator" | "creatorRole" | "createdAt">) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      router.push('/sign-in')
       setError("Unauthorized. Please sign in.");
       return;
     }

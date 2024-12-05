@@ -38,9 +38,9 @@ function ResponsiveAppBar() {
     router.push("/sign-in");
   };
 
-  const handleLogIn = () => {    
-    router.push("/");
-  };
+  // const handleLogIn = () => {    
+  //   router.push("/");
+  // };
 
   // const token = localStorage.getItem("token");
 

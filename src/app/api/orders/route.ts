@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/database/mongodb";
 import Order from "@/models/Order";
+import Cart from "@/models/Cart"
+import Product from "@/models/Product";
+import User from "@/models/User";
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,37 +27,52 @@ export async function POST(request: NextRequest) {
 
     const userId = request.headers.get("userId");
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized: User ID is missing." }, { status: 401 });
     }
 
-    const { products, totalAmount, address } = await request.json();
+    const cartItems = await request.json();
+    console.log(cartItems)
 
-    if (!products || !Array.isArray(products) || products.length === 0) {
-      return NextResponse.json({ error: "Products are required." }, { status: 400 });
-    }
+    let totalAmount = 0;
+    const orderProducts = cartItems.map((item: any) => {
+      totalAmount += item.price * item.quantity;
+      return {
+        product: item._id,
+        quantity: item.quantity,
+        price: item.price,
+      };
+    });
 
-    for (const item of products) {
-      if (!item.product || !item.quantity || !item.price) {
-        return NextResponse.json(
-          { error: "Each product must have a product ID, quantity, and price." },
-          { status: 400 }
-        );
+    const user = await User.findById(userId);
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+    console.log(user);
+
+    await Order.create({
+      user: user._id,
+      products: orderProducts,
+      totalAmount,
+      status: "PENDING",
+      address: "RANDOM ADDRESS",
+    });
+
+    await Cart.deleteMany({ user: userId });
+
+    for (const item of cartItems) {
+      const product = await Product.findById(item._id);
+      if (product) {
+        product.quantity -= item.quantity;
+        if (product.quantity < 0) product.quantity = 0; 
+        await product.save();
       }
     }
 
-    const newOrder = await Order.create({
-      user: userId,
-      products,
-      totalAmount,
-      address,
-      status: "PENDING",
-    });
-
-    return NextResponse.json(newOrder, { status: 201 });
+    // return NextResponse.json(newOrder, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: `Failed to add order: ${error}` }, { status: 500 });
+    console.error("Error during checkout:", error);
+    return NextResponse.json({ error: "Failed to complete checkout" }, { status: 500 });
   }
 }
+
 
 export async function DELETE(request: NextRequest) {
   try {

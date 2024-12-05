@@ -2,23 +2,28 @@
 import { useState } from "react";
 import axios from 'axios'
 
-const Add = ({ productId, stockNumber }: { productId: string; stockNumber: number;}) => {
+const Add = ({ id, stockNumber }: { id: string; stockNumber: number;}) => {
   const [quantity, setQuantity] = useState(1);
 
-  const addItem = async () => {
+  const addItem = async (id: string) => {
     const token = localStorage.getItem("token");
-    if(!token){
-        throw new Error("Unauthorized")
-    }
+      if (!token) {
+        throw new Error ("Unauthorized. Please sign in.");
+      }
 
     try {
-        await axios.post("", productId, {
-            headers: { Authorization: `Bearer ${token}` },
-        })
+      await axios.post("/api/cart",
+        { id }, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+  
+      alert("Product added to cart!");
     } catch (error) {
-        console.error("Error in Ordering Items: ", error)
+      console.error("Error adding product to cart:", error);
+      alert("Failed to add product to cart. Please try again.");
     }
-  }
+  };
 
   const handleQuantity = (type: "i" | "d") => {
     if (type === "d" && quantity > 1) {
@@ -62,7 +67,7 @@ const Add = ({ productId, stockNumber }: { productId: string; stockNumber: numbe
           )}
         </div>
         <button
-          onClick={() => addItem()}
+          onClick={() => addItem(id)}
           className="w-36 text-sm rounded-3xl ring-1 ring-lama text-lama py-2 px-4 hover:bg-lama hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:ring-0 disabled:text-white disabled:ring-none"
         >
           Add to Cart

@@ -53,6 +53,22 @@ const CartPage: React.FC = () => {
     fetchCartItems();
   }, []);
 
+  const handleCheckOut = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Unauthorized");
+    }
+    try {
+      await axios.post('/api/orders', cartItems , {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      setCartItems([]);
+    } catch (error) {
+      console.error("Error in Checkout: ", error);
+    }
+  }
+
   const handleQuantityChange = async (id: string, value: string) => {
     const updatedQuantity = Math.max(1, parseInt(value) || 1);
     try {
@@ -63,7 +79,7 @@ const CartPage: React.FC = () => {
 
       await axios.put(
         `/api/cart`,
-        { _id: id, quantity: updatedQuantity },
+        { _id: id, quantity: updatedQuantity,  },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -191,7 +207,7 @@ const CartPage: React.FC = () => {
                 <Typography variant="h6">Total</Typography>
                 <Typography variant="h6">${calculateTotal()}</Typography>
               </Box>
-              <Button variant="contained" color="primary" fullWidth>
+              <Button onClick={() => handleCheckOut()} variant="contained" color="primary" fullWidth>
                 Checkout
               </Button>
             </Card>

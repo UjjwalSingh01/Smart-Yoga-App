@@ -1,12 +1,11 @@
 "use client"
 
 import React from "react";
-import Image from "next/image";
 import Add from "@/components/Add";
 import axios from 'axios';
 import { useEffect, useState } from "react";
 import { Box, CircularProgress } from "@mui/material";
-import { useRouter } from "next/router";
+import { useSearchParams } from "next/navigation";
 
 type Product = {
   _id: string;
@@ -33,8 +32,8 @@ type Product = {
 // };
 
 const ProductDetail = () => {
-  const router = useRouter();
-  const { id } = router.query;
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
   const [productDetails, setProductDetail] = useState<Product>({
     _id: "",
@@ -56,7 +55,7 @@ const ProductDetail = () => {
         throw new Error("Unauthorized");
       }
       try {
-        const response = await axios.get(`/api/products?id=${id}`, {
+        const response = await axios.get(`/api/product?id=${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
   
@@ -81,7 +80,7 @@ const ProductDetail = () => {
   return (
     <div className="py-8 px-4">
       <div className="flex flex-col items-center gap-8 md:flex-row">
-        <Image
+        <img
           src={productDetails.image}
           alt={productDetails.title}
           width={400}
@@ -101,7 +100,7 @@ const ProductDetail = () => {
           </p>
 
           <Add
-            productId={productDetails._id!}
+            id={id!}
             stockNumber={productDetails.quantity || 1}
           />
 

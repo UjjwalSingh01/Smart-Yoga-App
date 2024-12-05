@@ -21,6 +21,15 @@ export async function GET(request: NextRequest) {
   }
 }
 
+type CartItem = {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  quantity: number;
+  image: string;
+};
+
 export async function POST(request: NextRequest) {
   try {
     await dbConnect();
@@ -31,10 +40,9 @@ export async function POST(request: NextRequest) {
     }
 
     const cartItems = await request.json();
-    console.log(cartItems)
 
     let totalAmount = 0;
-    const orderProducts = cartItems.map((item: any) => {
+    const orderProducts = cartItems.map((item: CartItem) => {
       totalAmount += item.price * item.quantity;
       return {
         product: item._id,

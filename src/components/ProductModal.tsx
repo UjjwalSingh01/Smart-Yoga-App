@@ -11,7 +11,7 @@ type ProductType = {
   discountedPrice: number;
   image: string;
   quantity: number;
-  policy: string;
+  returnPolicy: string;
   shippingPolicy: string;
 };
 
@@ -30,7 +30,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ open, onClose, onAdd 
     discountedPrice: 0,
     image: "",
     quantity: 0,
-    policy: "",
+    returnPolicy: "",
     shippingPolicy: "",
   });
 
@@ -48,7 +48,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ open, onClose, onAdd 
       discountedPrice: 0,
       image: "",
       quantity: 0,
-      policy: "",
+      returnPolicy: "",
       shippingPolicy: "",
     });
   };
@@ -107,7 +107,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ open, onClose, onAdd 
           fullWidth
           label="Return Policy"
           name="policy"
-          value={product.policy}
+          value={product.returnPolicy}
           onChange={handleChange}
           sx={{ mt: 2 }}
         />

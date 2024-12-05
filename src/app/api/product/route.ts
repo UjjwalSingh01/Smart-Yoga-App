@@ -68,19 +68,18 @@ export async function POST(request: NextRequest) {
   }
 
 // PATCH: Update an existing product
-export async function PATCH(req: NextRequest) {
+export async function PUT(request: NextRequest) {
   await connectToDatabase();
 
-  const url = new URL(req.url);
-  const id = url.searchParams.get("id");
-
-  if (!id) {
-    return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
-  }
-
   try {
-    const body = await req.json();
-    const updatedProduct = await Product.findByIdAndUpdate(id, body, { new: true });
+    // const userId = request.headers.get("userId");
+    // console.log(userId)
+    // if (!userId) {
+    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // }
+
+    const updatedItem = await request.json();
+    const updatedProduct = await Product.findByIdAndUpdate(updatedItem._id, updatedItem, { new: true });
 
     if (!updatedProduct) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });

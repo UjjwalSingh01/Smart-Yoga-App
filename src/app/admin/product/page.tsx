@@ -5,6 +5,7 @@ import { Container, Typography, Box, Button, Card, CardContent, CardMedia } from
 import AddIcon from "@mui/icons-material/Add";
 import AddProductModal from "@/components/ProductModal";
 import axios from "axios";
+import EditProductModal from "@/components/EditProductModal";
 
 type Product = {
   _id: string;
@@ -14,7 +15,7 @@ type Product = {
   discountedPrice: number;
   image: string;
   quantity: number;
-  policy: string;
+  returnPolicy: string;
   shippingPolicy: string;
 };
 
@@ -22,6 +23,8 @@ type Product = {
 const AdminProductPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isAddModalOpen, setAddModalOpen] = useState(false);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -45,13 +48,44 @@ const AdminProductPage: React.FC = () => {
     }
   };
 
-  const handleDeleteProduct = async (id: string) => {
+  const handleEditProduct = async (updatedProduct: Product) => {
+    const token = localStorage.getItem("token");
+    if(!token){
+      throw new Error("Unauthorized");
+    }
     try {
-      await axios.delete(`/api/product/${id}`);
+      const response = await axios.put("/api/product", updatedProduct, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product._id === updatedProduct._id ? response.data : product
+        )
+      );
+      setEditModalOpen(false);
+    } catch (err) {
+      console.error("Failed to update product:", err);
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    const token = localStorage.getItem("token");
+    if(!token){
+      throw new Error("Unnauthorized");
+    }
+    try {
+      await axios.delete(`/api/product/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setProducts((prevProducts) => prevProducts.filter((p) => p._id !== id));
     } catch (err) {
       console.error("Failed to delete product:", err);
     }
+  };
+
+  const openEditModal = (product: Product) => {
+    setSelectedProduct(product);
+    setEditModalOpen(true);
   };
 
   return (
@@ -118,12 +152,15 @@ const AdminProductPage: React.FC = () => {
               Quantity: {product.quantity}
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
-              Policy: {product.policy}
+              Policy: {product.returnPolicy}
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
               Shipping Policy: {product.shippingPolicy}
             </Typography>
             <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 2 }}>
+              <Button variant="contained" color="primary" onClick={() => openEditModal(product)}>
+                  Edit
+              </Button>
               <Button variant="contained" color="error" onClick={() => handleDeleteProduct(product._id)}>
                 Delete
               </Button>
@@ -138,6 +175,14 @@ const AdminProductPage: React.FC = () => {
       onClose={() => setAddModalOpen(false)}
       onAdd={handleAddProduct}
     />
+
+    <EditProductModal
+      open={isEditModalOpen}
+      onClose={() => setEditModalOpen(false)}
+      product={selectedProduct}
+      onUpdate={handleEditProduct}
+    />
+
   </Container>
   );
 };

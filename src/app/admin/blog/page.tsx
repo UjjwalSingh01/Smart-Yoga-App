@@ -31,11 +31,11 @@ type Blog = {
 const BlogPage: React.FC = () => {
   const router = useRouter();
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [filterDate, setFilterDate] = useState("");
   const [showOwnBlogs, setShowOwnBlogs] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {

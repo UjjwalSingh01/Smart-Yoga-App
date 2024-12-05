@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Box, CircularProgress, Typography } from "@mui/material";
 import SocialMediaCard from "@/components/SocialMediaCard";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 type SocialPost = {
   _id: string;
@@ -18,21 +19,26 @@ type SocialPost = {
 
 
 const SocialPage: React.FC = () => {
+  const router = useRouter();
   const [socialPosts, setSocialPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
         const token = localStorage.getItem("token");
-      try {
-        const response = await axios.get("/api/social", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-        setSocialPosts(response.data);
-      } catch (error) {
-        console.error("Failed to fetch social media posts", error);
-      }
-        setLoading(false);
+        if (!token) {
+            router.push('/sign-in')
+            throw new Error("Unauthorized");
+            }
+        try {
+            const response = await axios.get("/api/social", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setSocialPosts(response.data);
+        } catch (error) {
+            console.error("Failed to fetch social media posts", error);
+        }
+            setLoading(false);
     };
 
     fetchPosts();

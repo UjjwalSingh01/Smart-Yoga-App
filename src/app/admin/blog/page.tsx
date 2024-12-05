@@ -13,6 +13,7 @@ import AddIcon from "@mui/icons-material/Add";
 import BlogCard from "@/components/BlogCard";
 import AddBlogModal from "@/components/AddBlogModal";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 type Blog = {
   id: string;
@@ -28,6 +29,7 @@ type Blog = {
 
 
 const BlogPage: React.FC = () => {
+  const router = useRouter();
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [search, setSearch] = useState("");
@@ -64,6 +66,7 @@ const BlogPage: React.FC = () => {
   const handleAddBlog = async (newBlog: Omit<Blog, "id" | "creator" | "creatorRole" | "createdAt">) => {
     const token = localStorage.getItem("token");
     if (!token) {
+      router.push('/sign-in')
       setError("Unauthorized. Please sign in.");
       return;
     }

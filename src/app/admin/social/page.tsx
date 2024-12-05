@@ -6,6 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 import SocialMediaCard from "@/components/SocialMediaCard";
 import AddSocialMediaModal from "@/components/SocialMediaModal";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 type SocialPost = {
   _id: string;
@@ -19,6 +20,7 @@ type SocialPost = {
 };
 
 const SocialPage: React.FC = () => {
+  const router = useRouter()
   const [socialPosts, setSocialPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -27,6 +29,7 @@ const SocialPage: React.FC = () => {
     const fetchPosts = async () => {
         const token = localStorage.getItem("token");
         if (!token) {
+            router.push('/sign-in')
             throw new Error("Unauthorized");
         }
 

@@ -7,6 +7,7 @@ import axios from "axios";
 import DashboardCard from "@/components/DashboardCard";
 import SalesChart from "@/components/SalesChart";
 import AddAdminModal from "@/components/AddAdminModal";
+import { useRouter } from "next/router";
 
 interface SalesData {
   productsSold: {
@@ -23,6 +24,7 @@ interface SalesData {
 }
 
 const AdminDashboard: React.FC = () => {
+  const router = useRouter()
   const [data, setData] = useState<SalesData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,6 +34,7 @@ const AdminDashboard: React.FC = () => {
     const fetchData = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
+        router.push('/sign-in')
         setError("Unauthorized access. Please log in.");
         setLoading(false);
         return;
